@@ -56,8 +56,7 @@
             </div>
             
             <div id="auth-buttons-logged-out" class="hidden md:flex items-center space-x-4">
-                <a href="#" id="login-nav-btn" class="text-gray-600 hover:text-blue-700 transition duration-300">Login</a>
-                <a href="#" id="register-nav-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 shadow">Register</a>
+                <a href="#" id="auth-nav-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 shadow">Login / Register</a>
             </div>
             <div id="auth-buttons-logged-in" class="hidden md:flex items-center space-x-4">
                 <span id="welcome-message" class="text-gray-700"></span>
@@ -70,22 +69,18 @@
         </nav>
 
         <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
-            <a href="#" id="mobile-home-link" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">Home</a>
-            <a href="#" id="mobile-about-link" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">About</a>
-            <a href="#" id="mobile-ngo-link" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">NGO Dashboard</a>
+            <a href="#" id="mobile-home-link" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">Home</a>
+            <a href="#" id="mobile-about-link" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">About</a>
+            <a href="#" id="mobile-ngo-link" class="block py-3 px-6 text-gray-700 hover:bg-gray-100">NGO Dashboard</a>
             <div class="border-t border-gray-200"></div>
-            <div class="px-6 py-2">
-                <div class="flex justify-between items-center">
-                    <div id="mobile-register-wrapper">
-                        <a href="#" id="mobile-register-nav-btn" class="text-gray-700 hover:text-blue-700 font-medium">Register</a>
-                    </div>
-                    <div>
-                        <div id="mobile-login-wrapper">
-                             <a href="#" id="mobile-login-nav-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700">Login</a>
-                        </div>
-                        <div id="mobile-logout-wrapper" class="hidden">
-                             <a href="#" id="mobile-logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-600">Logout</a>
-                        </div>
+            <div class="px-6 py-3">
+                <div id="mobile-auth-logged-out-wrapper">
+                    <a href="#" id="mobile-auth-nav-btn" class="block text-center bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700">Login / Register</a>
+                </div>
+                <div id="mobile-auth-logged-in-wrapper" class="hidden">
+                    <div class="flex justify-between items-center">
+                        <span id="mobile-welcome-message" class="text-gray-700"></span>
+                        <a href="#" id="mobile-logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-600">Logout</a>
                     </div>
                 </div>
             </div>
@@ -165,6 +160,12 @@
                                 </div>
                                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">Login as NGO</button>
                             </form>
+                            <p class="text-center text-sm text-gray-600 mt-6">
+                                Don't have an account? 
+                                <a href="#" id="go-to-register-link" class="font-medium text-blue-600 hover:text-blue-500">
+                                    Register here
+                                </a>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -215,6 +216,12 @@
                                 </div>
                                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700">Register as NGO</button>
                             </form>
+                             <p class="text-center text-sm text-gray-600 mt-6">
+                                Already have an account? 
+                                <a href="#" id="go-to-login-link" class="font-medium text-blue-600 hover:text-blue-500">
+                                    Login here
+                                </a>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -336,7 +343,7 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         // --- STATE MANAGEMENT ---
-        let currentUser = null; // null | { type: 'donor' | 'ngo', name: string }
+        let currentUser = null;
         const LOGGED_IN_NGO_NAME = 'Sunrise Shelter';
         let needsData = [
             { id: 1, category: 'Food', ngo: 'Sunrise Shelter', title: 'Urgent Need for 50 Dinner Meals', description: 'We require 50 freshly prepared, nutritious dinner meals for our residents tonight. Vegetarian options preferred.', location: 'Hyderabad, Telangana', urgency: 'High' },
@@ -359,23 +366,24 @@
         const loggedInButtons = document.getElementById('auth-buttons-logged-in');
         const welcomeMessage = document.getElementById('welcome-message');
         
-        const mobileRegisterWrapper = document.getElementById('mobile-register-wrapper');
-        const mobileLoginWrapper = document.getElementById('mobile-login-wrapper');
-        const mobileLogoutWrapper = document.getElementById('mobile-logout-wrapper');
+        const mobileLoggedOutWrapper = document.getElementById('mobile-auth-logged-out-wrapper');
+        const mobileLoggedInWrapper = document.getElementById('mobile-auth-logged-in-wrapper');
+        const mobileWelcomeMessage = document.getElementById('mobile-welcome-message');
 
         const homeLink = document.getElementById('home-link');
         const aboutLink = document.getElementById('about-link');
         const ngoLink = document.getElementById('ngo-link');
         const brandLogo = document.getElementById('brand-logo');
-        const loginNavBtn = document.getElementById('login-nav-btn');
-        const registerNavBtn = document.getElementById('register-nav-btn');
+        const authNavBtn = document.getElementById('auth-nav-btn');
         const logoutBtn = document.getElementById('logout-btn');
         const mobileHomeLink = document.getElementById('mobile-home-link');
         const mobileAboutLink = document.getElementById('mobile-about-link');
         const mobileNgoLink = document.getElementById('mobile-ngo-link');
-        const mobileLoginNavBtn = document.getElementById('mobile-login-nav-btn');
-        const mobileRegisterNavBtn = document.getElementById('mobile-register-nav-btn');
+        const mobileAuthNavBtn = document.getElementById('mobile-auth-nav-btn');
         const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+
+        const goToRegisterLink = document.getElementById('go-to-register-link');
+        const goToLoginLink = document.getElementById('go-to-login-link');
 
         const authTabs = document.querySelectorAll('.auth-tab');
         const needsGrid = document.getElementById('needs-grid');
@@ -394,15 +402,14 @@
                 loggedOutButtons.classList.add('hidden');
                 loggedInButtons.classList.remove('hidden');
                 welcomeMessage.textContent = `Welcome, ${currentUser.name}!`;
-                mobileRegisterWrapper.classList.add('hidden');
-                mobileLoginWrapper.classList.add('hidden');
-                mobileLogoutWrapper.classList.remove('hidden');
+                mobileLoggedOutWrapper.classList.add('hidden');
+                mobileLoggedInWrapper.classList.remove('hidden');
+                mobileWelcomeMessage.textContent = `Welcome, ${currentUser.name}!`;
             } else {
                 loggedInButtons.classList.add('hidden');
                 loggedOutButtons.classList.remove('hidden');
-                mobileRegisterWrapper.classList.remove('hidden');
-                mobileLoginWrapper.classList.remove('hidden');
-                mobileLogoutWrapper.classList.add('hidden');
+                mobileLoggedInWrapper.classList.add('hidden');
+                mobileLoggedOutWrapper.classList.remove('hidden');
             }
             const isNgo = currentUser && currentUser.type === 'ngo';
             ngoLink.style.display = isNgo ? 'block' : 'none';
@@ -587,10 +594,12 @@
         
         [homeLink, mobileHomeLink, brandLogo].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('donor-view'); }));
         [aboutLink, mobileAboutLink].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('about-view'); }));
-        [loginNavBtn, mobileLoginNavBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); }));
-        [registerNavBtn, mobileRegisterNavBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('register-view'); }));
+        [authNavBtn, mobileAuthNavBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); }));
         [logoutBtn, mobileLogoutBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); handleLogout(); }));
         
+        goToRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showView('register-view'); });
+        goToLoginLink.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); });
+
         const handleNgoLinkClick = (e) => {
             e.preventDefault();
             if (currentUser && currentUser.type === 'ngo') {
