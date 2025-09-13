@@ -400,8 +400,8 @@
         const updateUI = () => {
             if (currentUser) {
                 loggedOutButtons.classList.add('hidden');
-                loggedInButtons.classList.remove('hidden');
-                welcomeMessage.textContent = `Welcome, ${currentUser.name}!`;
+                loggedInButtons.classList.add('hidden'); 
+                
                 mobileLoggedOutWrapper.classList.add('hidden');
                 mobileLoggedInWrapper.classList.remove('hidden');
                 mobileWelcomeMessage.textContent = `Welcome, ${currentUser.name}!`;
