@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect & Care | NGO Dashboard</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Custom scrollbar for a more polished look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <!-- Header / Navigation (Consistent with index.html) -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-blue-800">Connect & Care</a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="index.html" class="text-gray-600 hover:text-blue-700 transition duration-300">Home</a>
+                <a href="#" class="text-gray-600 hover:text-blue-700 transition duration-300">About</a>
+                <a href="ngo-page.html" class="text-blue-700 font-semibold transition duration-300">For NGOs</a>
+            </div>
+            <button class="md:hidden text-gray-700 focus:outline-none">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="#" class="text-gray-600 hover:text-blue-700 transition duration-300">Login</a>
+                <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 shadow">Register</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content for NGO Dashboard -->
+    <main>
+        <section id="ngo-dashboard-section" class="py-16 md:py-24 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+                    <div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900">NGO Dashboard</h2>
+                        <p class="text-gray-600 mt-2">Manage your organization's donation requests.</p>
+                    </div>
+                    <button id="post-need-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 mt-4 md:mt-0">Post a New Need</button>
+                </div>
+                
+                <!-- NGO's Needs List -->
+                <div id="ngo-needs-list" class="space-y-4">
+                    <!-- NGO's needs will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer (Consistent with index.html) -->
+    <footer class="bg-gray-900 text-white">
+        <div class="container mx-auto px-6 py-12">
+             <div class="border-t border-gray-800 mt-8 pt-6 text-center text-gray-500">
+                <p>&copy; 2025 Connect & Care. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add/Edit Need Modal (for NGOs) -->
+    <div id="ngo-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg">
+            <form id="ngo-form" class="w-full">
+                <input type="hidden" id="need-id">
+                <div class="p-6 border-b flex justify-between items-center">
+                    <h3 id="ngo-modal-title" class="text-2xl font-bold text-gray-800">Post a Need</h3>
+                    <button type="button" id="close-ngo-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label for="need-title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" id="need-title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="need-description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea id="need-description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="need-category" class="block text-sm font-medium text-gray-700">Category</label>
+                            <select id="need-category" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                <option>Food</option> <option>Blood</option> <option>Essentials</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="need-urgency" class="block text-sm font-medium text-gray-700">Urgency</label>
+                            <select id="need-urgency" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                <option>Low</option> <option>Medium</option> <option>High</option> <option>Critical</option>
+                            </select>
+                        </div>
+                    </div>
+                     <div>
+                        <label for="need-location" class="block text-sm font-medium text-gray-700">Location</label>
+                        <input type="text" id="need-location" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                </div>
+                <div class="p-6 bg-gray-50 rounded-b-lg flex justify-end">
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">Save Need</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript for NGO Dashboard -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DATA (Simulating a database) ---
+        // In a real app, this would be fetched from a server
+        let needsData = [
+            { id: 1, category: 'Food', ngo: 'Sunrise Shelter', title: 'Urgent Need for 50 Dinner Meals', description: 'We require 50 freshly prepared, nutritious dinner meals for our residents tonight. Vegetarian options preferred.', location: 'Hyderabad, Telangana', urgency: 'High' },
+            { id: 3, category: 'Essentials', ngo: 'Sunrise Shelter', title: 'Winter Blankets for Children', description: 'With the cold season approaching, we need 100 warm blankets for the children at our facility.', location: 'Gachibowli, Hyderabad', urgency: 'Medium' },
+        ];
+        
+        // For simulation, we assume the logged-in NGO is 'Sunrise Shelter'
+        const LOGGED_IN_NGO = 'Sunrise Shelter';
+
+        // --- DOM Elements ---
+        const ngoNeedsList = document.getElementById('ngo-needs-list');
+        const ngoModal = document.getElementById('ngo-modal');
+        const closeNgoModalBtn = document.getElementById('close-ngo-modal-btn');
+        const postNeedBtn = document.getElementById('post-need-btn');
+        const ngoForm = document.getElementById('ngo-form');
+
+        // --- HELPER FUNCTION ---
+        const getUrgencyClass = (urgency) => {
+            switch (urgency.toLowerCase()) {
+                case 'critical': return 'bg-red-600';
+                case 'high': return 'bg-orange-500';
+                case 'medium': return 'bg-yellow-500';
+                default: return 'bg-green-500';
+            }
+        };
+
+        // --- RENDER FUNCTION ---
+        const renderNgoNeeds = () => {
+            ngoNeedsList.innerHTML = '';
+            // Filter needs for the currently "logged in" NGO
+            const myNeeds = needsData.filter(need => need.ngo === LOGGED_IN_NGO);
+            if (myNeeds.length === 0) {
+                ngoNeedsList.innerHTML = `<p class="text-center text-gray-500 p-8 bg-white rounded-lg shadow">You have not posted any needs yet.</p>`;
+                return;
+            }
+            myNeeds.forEach(need => {
+                const item = `
+                <div class="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div class="mb-4 md:mb-0">
+                        <p class="text-sm font-semibold text-blue-600">${need.category} <span class="ml-2 text-xs font-bold text-white px-2 py-0.5 rounded-full ${getUrgencyClass(need.urgency)}">${need.urgency}</span></p>
+                        <h4 class="text-lg font-bold text-gray-800">${need.title}</h4>
+                        <p class="text-sm text-gray-500">${need.location}</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="edit-need-btn text-sm bg-yellow-400 text-white px-3 py-1 rounded-md hover:bg-yellow-500" data-id="${need.id}">Edit</button>
+                        <button class="delete-need-btn text-sm bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600" data-id="${need.id}">Delete</button>
+                    </div>
+                </div>
+                `;
+                ngoNeedsList.innerHTML += item;
+            });
+        };
+        
+        // --- MODAL LOGIC (NGO) ---
+        const openNgoModal = (needId = null) => {
+            ngoForm.reset();
+            if (needId) { // Editing existing need
+                const need = needsData.find(n => n.id == needId);
+                document.getElementById('ngo-modal-title').textContent = 'Edit Need';
+                document.getElementById('need-id').value = need.id;
+                document.getElementById('need-title').value = need.title;
+                document.getElementById('need-description').value = need.description;
+                document.getElementById('need-category').value = need.category;
+                document.getElementById('need-urgency').value = need.urgency;
+                document.getElementById('need-location').value = need.location;
+            } else { // Creating new need
+                document.getElementById('ngo-modal-title').textContent = 'Post a New Need';
+                document.getElementById('need-id').value = '';
+            }
+            ngoModal.classList.remove('hidden');
+        };
+        const closeNgoModal = () => ngoModal.classList.add('hidden');
+
+        // --- DATA MANIPULATION ---
+        const saveNeed = (e) => {
+            e.preventDefault();
+            const id = document.getElementById('need-id').value;
+            const need = {
+                title: document.getElementById('need-title').value,
+                description: document.getElementById('need-description').value,
+                category: document.getElementById('need-category').value,
+                urgency: document.getElementById('need-urgency').value,
+                location: document.getElementById('need-location').value,
+                ngo: LOGGED_IN_NGO
+            };
+
+            if (id) { // Update
+                const index = needsData.findIndex(n => n.id == id);
+                needsData[index] = { ...needsData[index], ...need };
+            } else { // Create
+                need.id = Date.now(); // Simple unique ID
+                needsData.push(need);
+            }
+            closeNgoModal();
+            renderNgoNeeds();
+        };
+
+        const deleteNeed = (needId) => {
+            if (confirm('Are you sure you want to delete this need?')) {
+                needsData = needsData.filter(n => n.id != needId);
+                renderNgoNeeds();
+            }
+        };
+        
+        // --- EVENT LISTENERS ---
+        ngoNeedsList.addEventListener('click', (e) => {
+            const editButton = e.target.closest('.edit-need-btn');
+            const deleteButton = e.target.closest('.delete-need-btn');
+            if (editButton) openNgoModal(editButton.dataset.id);
+            if (deleteButton) deleteNeed(deleteButton.dataset.id);
+        });
+        
+        closeNgoModalBtn.addEventListener('click', closeNgoModal);
+        ngoModal.addEventListener('click', (e) => { if (e.target.id === 'ngo-modal') closeNgoModal(); });
+        postNeedBtn.addEventListener('click', () => openNgoModal());
+        ngoForm.addEventListener('submit', saveNeed);
+
+        // --- INITIAL RENDER ---
+        renderNgoNeeds();
+    });
+    </script>
+</body>
+</html>
