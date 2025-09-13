@@ -48,9 +48,10 @@
     <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" id="brand-logo" class="text-2xl font-bold text-blue-800">Connect & Care</a>
+            
             <div class="hidden md:flex items-center space-x-6">
                 <a href="#" id="home-link" class="nav-link text-gray-600 hover:text-blue-700 transition duration-300 nav-active">Home</a>
-                <a href="#" class="nav-link text-gray-600 hover:text-blue-700 transition duration-300">About</a>
+                <a href="#" id="about-link" class="nav-link text-gray-600 hover:text-blue-700 transition duration-300">About</a>
                 <a href="#" id="ngo-link" class="nav-link text-gray-600 hover:text-blue-700 transition duration-300">NGO Dashboard</a>
             </div>
             
@@ -63,14 +64,27 @@
                 <a href="#" id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300 shadow">Logout</a>
             </div>
             
-            <button class="md:hidden text-gray-700 focus:outline-none">
+            <button id="hamburger-btn" class="md:hidden text-gray-700 focus:outline-none">
                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </nav>
+
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-md">
+            <a href="#" id="mobile-home-link" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">Home</a>
+            <a href="#" id="mobile-about-link" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">About</a>
+            <a href="#" id="mobile-ngo-link" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">NGO Dashboard</a>
+            <div class="border-t border-gray-200 my-2"></div>
+            <div id="mobile-auth-logged-out">
+                <a href="#" id="mobile-login-nav-btn" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">Login</a>
+                <a href="#" id="mobile-register-nav-btn" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">Register</a>
+            </div>
+            <div id="mobile-auth-logged-in" class="hidden">
+                 <a href="#" id="mobile-logout-btn" class="block py-2 px-6 text-red-600 hover:bg-gray-100">Logout</a>
+            </div>
+        </div>
     </header>
 
     <main>
-
         <div id="donor-view" class="main-view">
             <section class="hero-section text-white py-20 md:py-32">
                 <div class="container mx-auto px-6 text-center">
@@ -155,7 +169,7 @@
                     <div class="w-full max-w-md">
                         <div class="bg-white shadow-md rounded-lg p-8">
                             <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Register</h2>
-                             <div class="flex border-b mb-6">
+                            <div class="flex border-b mb-6">
                                 <button data-auth-tab="donor-register" class="auth-tab tab-active flex-1 py-2 font-semibold text-gray-600 focus:outline-none">Donor</button>
                                 <button data-auth-tab="ngo-register" class="auth-tab flex-1 py-2 font-semibold text-gray-600 focus:outline-none">NGO</button>
                             </div>
@@ -198,7 +212,40 @@
                 </div>
             </section>
         </div>
+        
+        <div id="about-view" class="main-view hidden">
+            <section class="py-16 md:py-24 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="max-w-4xl mx-auto">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 text-center">About Connect & Care</h2>
+                        <p class="mt-4 text-lg text-gray-600 text-center">Connecting communities, one donation at a time.</p>
+                        
+                        <div class="mt-12 text-gray-700 space-y-6">
+                            <p>Connect & Care was born from a simple idea: that surplus should meet need. In a city as vibrant as Hyderabad, many individuals, restaurants, and event organizers have excess food and resources, while numerous verified NGOs work tirelessly to support the underprivileged. We saw an opportunity to bridge this gap with technology.</p>
+                            <p>Our platform provides a transparent, efficient, and direct link between those who want to give and those who are on the ground making a difference. We are more than just a website; we are a community-driven movement aimed at reducing waste and uplifting lives.</p>
+                        </div>
 
+                        <div class="mt-16">
+                            <h3 class="text-2xl font-bold text-gray-900 text-center">How It Works</h3>
+                            <div class="grid md:grid-cols-3 gap-8 mt-8 text-center">
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <h4 class="font-semibold text-lg text-blue-800">1. NGOs Post Needs</h4>
+                                    <p class="mt-2 text-gray-600">Verified NGOs post specific, time-sensitive needs, from hot meals and groceries to blood donations and essential supplies.</p>
+                                </div>
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <h4 class="font-semibold text-lg text-blue-800">2. Donors Find Needs</h4>
+                                    <p class="mt-2 text-gray-600">Compassionate donors browse the live feed, filtering by category to find a need they can fulfill in their local area.</p>
+                                </div>
+                                <div class="bg-gray-50 p-6 rounded-lg">
+                                    <h4 class="font-semibold text-lg text-blue-800">3. Connect & Donate</h4>
+                                    <p class="mt-2 text-gray-600">Donors pledge their support and receive direct contact information to coordinate a seamless and impactful donation.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
     <footer class="bg-gray-900 text-white">
@@ -282,8 +329,6 @@
 
         // --- STATE MANAGEMENT ---
         let currentUser = null; // null | { type: 'donor' | 'ngo', name: string }
-        
-        // Simulating the main NGO for the dashboard
         const LOGGED_IN_NGO_NAME = 'Sunrise Shelter';
         let needsData = [
             { id: 1, category: 'Food', ngo: 'Sunrise Shelter', title: 'Urgent Need for 50 Dinner Meals', description: 'We require 50 freshly prepared, nutritious dinner meals for our residents tonight. Vegetarian options preferred.', location: 'Hyderabad, Telangana', urgency: 'High' },
@@ -297,17 +342,31 @@
         ];
 
         // --- DOM Elements ---
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
         const mainViews = document.querySelectorAll('.main-view');
         const navLinks = document.querySelectorAll('.nav-link');
+        
         const loggedOutButtons = document.getElementById('auth-buttons-logged-out');
         const loggedInButtons = document.getElementById('auth-buttons-logged-in');
+        const mobileLoggedOutButtons = document.getElementById('mobile-auth-logged-out');
+        const mobileLoggedInButtons = document.getElementById('mobile-auth-logged-in');
         const welcomeMessage = document.getElementById('welcome-message');
+        
         const homeLink = document.getElementById('home-link');
+        const aboutLink = document.getElementById('about-link');
         const ngoLink = document.getElementById('ngo-link');
         const brandLogo = document.getElementById('brand-logo');
         const loginNavBtn = document.getElementById('login-nav-btn');
         const registerNavBtn = document.getElementById('register-nav-btn');
         const logoutBtn = document.getElementById('logout-btn');
+        const mobileHomeLink = document.getElementById('mobile-home-link');
+        const mobileAboutLink = document.getElementById('mobile-about-link');
+        const mobileNgoLink = document.getElementById('mobile-ngo-link');
+        const mobileLoginNavBtn = document.getElementById('mobile-login-nav-btn');
+        const mobileRegisterNavBtn = document.getElementById('mobile-register-nav-btn');
+        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+
         const authTabs = document.querySelectorAll('.auth-tab');
         const needsGrid = document.getElementById('needs-grid');
         const filterButtonsContainer = document.getElementById('filter-buttons');
@@ -325,11 +384,17 @@
                 loggedOutButtons.classList.add('hidden');
                 loggedInButtons.classList.remove('hidden');
                 welcomeMessage.textContent = `Welcome, ${currentUser.name}!`;
+                mobileLoggedOutButtons.classList.add('hidden');
+                mobileLoggedInButtons.classList.remove('hidden');
             } else {
                 loggedInButtons.classList.add('hidden');
                 loggedOutButtons.classList.remove('hidden');
+                mobileLoggedInButtons.classList.add('hidden');
+                mobileLoggedOutButtons.classList.remove('hidden');
             }
-            ngoLink.style.display = (currentUser && currentUser.type === 'ngo') ? 'block' : 'none';
+            const isNgo = currentUser && currentUser.type === 'ngo';
+            ngoLink.style.display = isNgo ? 'block' : 'none';
+            mobileNgoLink.style.display = isNgo ? 'block' : 'none';
         };
 
         const showView = (viewId) => {
@@ -337,7 +402,9 @@
             document.getElementById(viewId).classList.remove('hidden');
             navLinks.forEach(link => link.classList.remove('nav-active'));
             if (viewId === 'donor-view') homeLink.classList.add('nav-active');
+            if (viewId === 'about-view') aboutLink.classList.add('nav-active');
             if (viewId === 'ngo-view') ngoLink.classList.add('nav-active');
+            mobileMenu.classList.add('hidden');
         };
 
         // --- AUTHENTICATION (Simulated) ---
@@ -442,16 +509,56 @@
         };
         
         // --- MODAL LOGIC ---
-        const openDonationModal = (needId) => { /* ... Logic to populate and show donation modal ... */ donationModal.classList.remove('hidden'); };
+        const openDonationModal = (needId) => {
+            const need = needsData.find(n => n.id == needId);
+            if (need) {
+                donationModal.querySelector('#modal-title').textContent = need.title;
+                donationModal.querySelector('#modal-ngo').textContent = need.ngo;
+                donationModal.querySelector('#modal-location').textContent = need.location;
+                donationModal.querySelector('#modal-description').textContent = need.description;
+                donationModal.classList.remove('hidden');
+            }
+        };
         const closeDonationModal = () => donationModal.classList.add('hidden');
-        const openNgoModal = (needId = null) => { /* ... Logic to populate and show NGO modal for edit/add ... */ ngoModal.classList.remove('hidden');};
+        
+        const openNgoModal = (needId = null) => {
+            ngoForm.reset();
+            if (needId) {
+                const need = needsData.find(n => n.id == needId);
+                ngoModal.querySelector('#ngo-modal-title').textContent = 'Edit Need';
+                ngoModal.querySelector('#need-id').value = need.id;
+                ngoModal.querySelector('#need-title').value = need.title;
+                ngoModal.querySelector('#need-description').value = need.description;
+                ngoModal.querySelector('#need-category').value = need.category;
+                ngoModal.querySelector('#need-urgency').value = need.urgency;
+                ngoModal.querySelector('#need-location').value = need.location;
+            } else {
+                ngoModal.querySelector('#ngo-modal-title').textContent = 'Post a New Need';
+                ngoModal.querySelector('#need-id').value = '';
+            }
+            ngoModal.classList.remove('hidden');
+        };
         const closeNgoModal = () => ngoModal.classList.add('hidden');
 
         const saveNeed = (e) => {
             e.preventDefault();
             const id = document.getElementById('need-id').value;
-            const updatedNeed = { /* ... get form values ... */ };
-            if (id) { /* update logic */ } else { /* create logic */ }
+            const needDetails = {
+                title: document.getElementById('need-title').value,
+                description: document.getElementById('need-description').value,
+                category: document.getElementById('need-category').value,
+                urgency: document.getElementById('need-urgency').value,
+                location: document.getElementById('need-location').value,
+                ngo: LOGGED_IN_NGO_NAME
+            };
+
+            if (id) {
+                const index = needsData.findIndex(n => n.id == id);
+                needsData[index] = { ...needsData[index], ...needDetails };
+            } else { 
+                needDetails.id = Date.now();
+                needsData.push(needDetails);
+            }
             closeNgoModal();
             renderNgoNeeds();
         };
@@ -464,13 +571,15 @@
         };
 
         // --- EVENT LISTENERS ---
-        homeLink.addEventListener('click', (e) => { e.preventDefault(); showView('donor-view'); });
-        brandLogo.addEventListener('click', (e) => { e.preventDefault(); showView('donor-view'); });
-        loginNavBtn.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); });
-        registerNavBtn.addEventListener('click', (e) => { e.preventDefault(); showView('register-view'); });
-        logoutBtn.addEventListener('click', (e) => { e.preventDefault(); handleLogout(); });
-
-        ngoLink.addEventListener('click', (e) => {
+        hamburgerBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        
+        [homeLink, mobileHomeLink, brandLogo].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('donor-view'); }));
+        [aboutLink, mobileAboutLink].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('about-view'); }));
+        [loginNavBtn, mobileLoginNavBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); }));
+        [registerNavBtn, mobileRegisterNavBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('register-view'); }));
+        [logoutBtn, mobileLogoutBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); handleLogout(); }));
+        
+        const handleNgoLinkClick = (e) => {
             e.preventDefault();
             if (currentUser && currentUser.type === 'ngo') {
                 renderNgoNeeds();
@@ -479,7 +588,8 @@
                 alert('You must be logged in as an NGO to view the dashboard.');
                 showView('login-view');
             }
-        });
+        };
+        [ngoLink, mobileNgoLink].forEach(el => el.addEventListener('click', handleNgoLinkClick));
 
         authTabs.forEach(tab => {
             tab.addEventListener('click', () => {
@@ -512,7 +622,6 @@
             if (e.target.closest('.delete-need-btn')) deleteNeed(e.target.closest('.delete-need-btn').dataset.id);
         });
 
-        // Modal close buttons and submission
         if(closeModalBtn) closeModalBtn.addEventListener('click', closeDonationModal);
         donationModal.addEventListener('click', (e) => { if (e.target.id === 'donation-modal') closeDonationModal(); });
         if(closeNgoModalBtn) closeNgoModalBtn.addEventListener('click', closeNgoModal);
