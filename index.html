@@ -232,7 +232,9 @@
             <section class="py-16 md:py-24 bg-white">
                 <div class="container mx-auto px-6">
                     <div class="max-w-4xl mx-auto">
-                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 text-center">About Connect & Care</h2>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 text-center">Team</h2>
+                        <p class="mt-4 text-lg text-gray-700 text-center">P. Navdeep Reddy, G.Thanmayee Reddy, T. Padhmini, T. Abhignya </p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 text-center mt-12">About Connect & Care</h2>
                         <p class="mt-4 text-lg text-gray-600 text-center">Connecting communities, one donation at a time.</p>
                         
                         <div class="mt-12 text-gray-700 space-y-6">
@@ -580,12 +582,14 @@
             }
             closeNgoModal();
             renderNgoNeeds();
+            renderNeeds(needsData);
         };
 
         const deleteNeed = (needId) => {
             if (confirm('Are you sure you want to delete this need?')) {
                 needsData = needsData.filter(n => n.id != needId);
                 renderNgoNeeds();
+                renderNeeds(needsData);
             }
         };
 
