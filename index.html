@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connect & Care | A Unified Donation Platform</title>
     
-    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Custom Styles -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -43,21 +40,27 @@
             color: white !important;
             border-color: #1e40af !important;
         }
+        .nav-active {
+            color: #1d4ed8 !important; /* A strong blue for active nav link */
+            font-weight: 600 !important;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="antialiased text-gray-800">
 
-    <!-- Header / Navigation -->
     <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold text-blue-800">Connect & Care</a>
+            <a href="#" id="brand-logo" class="text-2xl font-bold text-blue-800">Connect & Care</a>
             <div class="hidden md:flex items-center space-x-6">
-                <a href="#" class="text-gray-600 hover:text-blue-700 transition duration-300">Home</a>
+                <a href="#" id="home-link" class="text-gray-600 hover:text-blue-700 transition duration-300 nav-active">Home</a>
                 <a href="#" class="text-gray-600 hover:text-blue-700 transition duration-300">About</a>
-                <a href="https://www.youtube.com/.com" class="text-gray-600 hover:text-blue-700 transition duration-300">For NGOs</a>
+                <a href="#" id="ngo-link" class="text-gray-600 hover:text-blue-700 transition duration-300">For NGOs</a>
             </div>
             <button class="md:hidden text-gray-700 focus:outline-none">
-                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://youtube.com"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
             <div class="hidden md:flex items-center space-x-4">
                 <a href="#" class="text-gray-600 hover:text-blue-700 transition duration-300">Login</a>
@@ -66,42 +69,55 @@
         </nav>
     </header>
 
-    <!-- Main Content -->
     <main>
-        <!-- Hero Section -->
-        <section class="hero-section text-white py-20 md:py-32">
-            <div class="container mx-auto px-6 text-center">
-                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">Bridge the Gap. Fulfill a Need.</h1>
-                <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-8">The most efficient platform connecting passionate donors with verified NGOs for food, blood, and essential supplies.</p>
-                <a href="#needs-section" class="bg-white text-blue-800 font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition duration-300 transform hover:scale-105">Find Nearby Needs</a>
-            </div>
-        </section>
 
-        <!-- Needs Listing Section -->
-        <section id="needs-section" class="py-16 md:py-24 bg-white">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-12">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Current Needs</h2>
-                    <p class="text-gray-600 mt-2">Browse requests from NGOs and make a difference today.</p>
+        <div id="donor-view">
+             <section class="hero-section text-white py-20 md:py-32">
+                <div class="container mx-auto px-6 text-center">
+                    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">Bridge the Gap. Fulfill a Need.</h1>
+                    <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-8">The most efficient platform connecting passionate donors with verified NGOs for food, blood, and essential supplies.</p>
+                    <a href="#needs-section" class="bg-white text-blue-800 font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition duration-300 transform hover:scale-105">Find Nearby Needs</a>
                 </div>
+            </section>
 
-                <!-- Filter Buttons -->
-                <div id="filter-buttons" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-10">
-                    <button data-category="All" class="filter-btn active-filter text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">All</button>
-                    <button data-category="Food" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Food</button>
-                    <button data-category="Blood" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Blood</button>
-                    <button data-category="Essentials" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Essentials</button>
-                </div>
+            <section id="needs-section" class="py-16 md:py-24 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Current Needs</h2>
+                        <p class="text-gray-600 mt-2">Browse requests from NGOs and make a difference today.</p>
+                    </div>
 
-                <!-- Needs Grid -->
-                <div id="needs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Donation need cards will be dynamically inserted here by JavaScript -->
+                    <div id="filter-buttons" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-10">
+                        <button data-category="All" class="filter-btn active-filter text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">All</button>
+                        <button data-category="Food" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Food</button>
+                        <button data-category="Blood" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Blood</button>
+                        <button data-category="Essentials" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Essentials</button>
+                    </div>
+
+                    <div id="needs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
+
+        <div id="ngo-view" class="hidden">
+            <section id="ngo-dashboard-section" class="py-16 md:py-24 bg-gray-50">
+                <div class="container mx-auto px-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+                        <div>
+                            <h2 class="text-3xl md:text-4xl font-bold text-gray-900">NGO Dashboard</h2>
+                            <p class="text-gray-600 mt-2">Manage your organization's donation requests.</p>
+                        </div>
+                        <button id="post-need-btn" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 mt-4 md:mt-0">Post a New Need</button>
+                    </div>
+                    
+                    <div id="ngo-needs-list" class="space-y-4">
+                        </div>
+                </div>
+            </section>
+        </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-gray-900 text-white">
         <div class="container mx-auto px-6 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -126,8 +142,7 @@
                 </div>
                 <div>
                     <h4 class="font-semibold mb-4">Follow Us</h4>
-                    <!-- Social Media Icons -->
-                </div>
+                    </div>
             </div>
             <div class="border-t border-gray-800 mt-8 pt-6 text-center text-gray-500">
                 <p>&copy; 2025 Connect & Care. All rights reserved.</p>
@@ -135,9 +150,8 @@
         </div>
     </footer>
 
-    <!-- Donation Modal -->
     <div id="donation-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg animate-fade-in-up">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg">
             <div class="p-6 border-b flex justify-between items-center">
                 <h3 id="modal-title" class="text-2xl font-bold text-gray-800">Donation Details</h3>
                 <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
@@ -157,30 +171,110 @@
         </div>
     </div>
 
+    <div id="ngo-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg">
+            <form id="ngo-form" class="w-full">
+                <input type="hidden" id="need-id">
+                <div class="p-6 border-b flex justify-between items-center">
+                    <h3 id="ngo-modal-title" class="text-2xl font-bold text-gray-800">Post a Need</h3>
+                    <button type="button" id="close-ngo-modal-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label for="need-title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" id="need-title" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="need-description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea id="need-description" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="need-category" class="block text-sm font-medium text-gray-700">Category</label>
+                            <select id="need-category" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                <option>Food</option> <option>Blood</option> <option>Essentials</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="need-urgency" class="block text-sm font-medium text-gray-700">Urgency</label>
+                            <select id="need-urgency" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                <option>Low</option> <option>Medium</option> <option>High</option> <option>Critical</option>
+                            </select>
+                        </div>
+                    </div>
+                     <div>
+                        <label for="need-location" class="block text-sm font-medium text-gray-700">Location</label>
+                        <input type="text" id="need-location" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                </div>
+                <div class="p-6 bg-gray-50 rounded-b-lg flex justify-end">
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">Save Need</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <!-- JavaScript Logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- DATA (Simulating a database) ---
-            const needsData = [
+            // --- DATA (Unified source of truth, simulating a database) ---
+            let needsData = [
                 { id: 1, category: 'Food', ngo: 'Sunrise Shelter', title: 'Urgent Need for 50 Dinner Meals', description: 'We require 50 freshly prepared, nutritious dinner meals for our residents tonight. Vegetarian options preferred.', location: 'Hyderabad, Telangana', urgency: 'High' },
                 { id: 2, category: 'Blood', ngo: 'City Central Hospital', title: 'O-Negative Blood for Emergency Surgery', description: 'A patient is in critical condition and requires 2 units of O-negative blood immediately for an emergency surgery.', location: 'Secunderabad, Telangana', urgency: 'Critical' },
                 { id: 3, category: 'Essentials', ngo: 'Hope Foundation Orphanage', title: 'Winter Blankets for Children', description: 'With the cold season approaching, we need 100 warm blankets for the children at our facility.', location: 'Gachibowli, Hyderabad', urgency: 'Medium' },
                 { id: 4, category: 'Food', ngo: 'Community Kitchen', title: 'Weekly Grocery Stock Up', description: 'We need non-perishable items like rice, lentils, flour, and cooking oil to prepare meals for the next week.', location: 'Madhapur, Hyderabad', urgency: 'Medium' },
                 { id: 5, category: 'Essentials', ngo: 'Animal Care Shelter', title: 'Dog & Cat Food Supplies', description: 'Our shelter is running low on dry food for dogs and cats. Any brand is appreciated.', location: 'Jubilee Hills, Hyderabad', urgency: 'Low' },
                 { id: 6, category: 'Blood', ngo: 'Lifeblood Bank', title: 'A+ Blood Donors for Stock', description: 'We are looking to increase our reserves of A-positive blood. We encourage healthy individuals to donate.', location: 'Banjara Hills, Hyderabad', urgency: 'Low' },
-                { id: 7, category: 'Food', ngo: 'The Helping Hand', title: 'Surplus food from Events/Parties', description: 'We can collect leftover, untouched food from weddings, corporate events, or parties to distribute to the needy.', location: 'Hyderabad, Telangana', urgency: 'Medium' },
+                { id: 7, category: 'Food', ngo: 'Sunrise Shelter', title: 'Surplus food from Events/Parties', description: 'We can collect leftover, untouched food from weddings, corporate events, or parties to distribute to the needy.', location: 'Hyderabad, Telangana', urgency: 'Medium' },
                 { id: 8, category: 'Essentials', ngo: 'Children\'s Education Trust', title: 'Notebooks and Stationery', description: 'We need 500 notebooks, pens, and pencils for the upcoming school term for underprivileged students.', location: 'Kukatpally, Hyderabad', urgency: 'High' },
             ];
+            
+            // For simulation, we assume the logged-in NGO is 'Sunrise Shelter'
+            const LOGGED_IN_NGO = 'Sunrise Shelter';
 
             // --- DOM Elements ---
+            // Views
+            const donorView = document.getElementById('donor-view');
+            const ngoView = document.getElementById('ngo-view');
+
+            // Navigation
+            const homeLink = document.getElementById('home-link');
+            const ngoLink = document.getElementById('ngo-link');
+            const brandLogo = document.getElementById('brand-logo');
+
+            // Donor View Elements
             const needsGrid = document.getElementById('needs-grid');
             const filterButtonsContainer = document.getElementById('filter-buttons');
             const modal = document.getElementById('donation-modal');
             const closeModalBtn = document.getElementById('close-modal-btn');
 
-            // --- HELPER FUNCTIONS ---
+            // NGO View Elements
+            const ngoNeedsList = document.getElementById('ngo-needs-list');
+            const ngoModal = document.getElementById('ngo-modal');
+            const closeNgoModalBtn = document.getElementById('close-ngo-modal-btn');
+            const postNeedBtn = document.getElementById('post-need-btn');
+            const ngoForm = document.getElementById('ngo-form');
+            
+            // --- VIEW SWITCHING LOGIC ---
+            const showDonorView = () => {
+                ngoView.classList.add('hidden');
+                donorView.classList.remove('hidden');
+                homeLink.classList.add('nav-active');
+                ngoLink.classList.remove('nav-active');
+                document.title = 'Connect & Care | A Unified Donation Platform';
+                renderNeeds(needsData); // Re-render donor view in case data changed
+            };
+            
+            const showNgoView = () => {
+                donorView.classList.add('hidden');
+                ngoView.classList.remove('hidden');
+                ngoLink.classList.add('nav-active');
+                homeLink.classList.remove('nav-active');
+                document.title = 'Connect & Care | NGO Dashboard';
+                renderNgoNeeds(); // Always render the latest data for the NGO
+            };
+
+            // --- HELPER FUNCTIONS (SHARED) ---
             const getUrgencyClass = (urgency) => {
                 switch (urgency.toLowerCase()) {
                     case 'critical': return 'bg-red-600';
@@ -191,22 +285,21 @@
             };
 
             const getCategoryIcon = (category) => {
-                switch (category.toLowerCase()) {
-                    case 'food': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l1.09 2.18L15 6l-2.18 1.09L12 9.27l-1.09-2.18L9 6l2.18-1.09L12 2.73zM12 21a9 9 0 100-18 9 9 0 000 18z"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M10 14a2 2 0 104 0h-4z"></path>`; // Simplified food icon
-                    case 'blood': return `<svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98S17.51 2.02 12 2.02zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.58-12.03l-4.24 4.24c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L12.99 7.97c-.39-.39-1.02-.39-1.41 0z"></path></svg>`; // Blood drop
-                    case 'essentials': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>`; // Gift Box
+                 switch (category.toLowerCase()) {
+                    case 'food': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l1.09 2.18L15 6l-2.18 1.09L12 9.27l-1.09-2.18L9 6l2.18-1.09L12 2.73zM12 21a9 9 0 100-18 9 9 0 000 18z"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M10 14a2 2 0 104 0h-4z"></path>`;
+                    case 'blood': return `<svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98S17.51 2.02 12 2.02zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.58-12.03l-4.24 4.24c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L12.99 7.97c-.39-.39-1.02-.39-1.41 0z"></path></svg>`;
+                    case 'essentials': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>`;
                     default: return '';
                 }
             };
             
-            // --- RENDER FUNCTION ---
+            // --- DONOR VIEW LOGIC ---
             const renderNeeds = (filteredNeeds) => {
-                needsGrid.innerHTML = ''; // Clear existing grid
+                needsGrid.innerHTML = '';
                 if (filteredNeeds.length === 0) {
                     needsGrid.innerHTML = `<p class="text-center text-gray-500 md:col-span-2 lg:col-span-3">No needs found for this category.</p>`;
                     return;
                 }
-
                 filteredNeeds.forEach(need => {
                     const card = `
                         <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
@@ -235,7 +328,6 @@
                 });
             };
 
-            // --- MODAL LOGIC ---
             const openModal = (needId) => {
                 const need = needsData.find(n => n.id == needId);
                 if (need) {
@@ -246,42 +338,126 @@
                     modal.classList.remove('hidden');
                 }
             };
+            const closeModal = () => modal.classList.add('hidden');
 
-            const closeModal = () => {
-                modal.classList.add('hidden');
+            // --- NGO VIEW LOGIC ---
+            const renderNgoNeeds = () => {
+                ngoNeedsList.innerHTML = '';
+                const myNeeds = needsData.filter(need => need.ngo === LOGGED_IN_NGO);
+                if (myNeeds.length === 0) {
+                    ngoNeedsList.innerHTML = `<p class="text-center text-gray-500 p-8 bg-white rounded-lg shadow">You have not posted any needs yet.</p>`;
+                    return;
+                }
+                myNeeds.forEach(need => {
+                    const item = `
+                    <div class="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div class="mb-4 md:mb-0">
+                            <p class="text-sm font-semibold text-blue-600">${need.category} <span class="ml-2 text-xs font-bold text-white px-2 py-0.5 rounded-full ${getUrgencyClass(need.urgency)}">${need.urgency}</span></p>
+                            <h4 class="text-lg font-bold text-gray-800">${need.title}</h4>
+                            <p class="text-sm text-gray-500">${need.location}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="edit-need-btn text-sm bg-yellow-400 text-white px-3 py-1 rounded-md hover:bg-yellow-500" data-id="${need.id}">Edit</button>
+                            <button class="delete-need-btn text-sm bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600" data-id="${need.id}">Delete</button>
+                        </div>
+                    </div>
+                    `;
+                    ngoNeedsList.innerHTML += item;
+                });
+            };
+
+            const openNgoModal = (needId = null) => {
+                ngoForm.reset();
+                if (needId) {
+                    const need = needsData.find(n => n.id == needId);
+                    document.getElementById('ngo-modal-title').textContent = 'Edit Need';
+                    document.getElementById('need-id').value = need.id;
+                    document.getElementById('need-title').value = need.title;
+                    document.getElementById('need-description').value = need.description;
+                    document.getElementById('need-category').value = need.category;
+                    document.getElementById('need-urgency').value = need.urgency;
+                    document.getElementById('need-location').value = need.location;
+                } else {
+                    document.getElementById('ngo-modal-title').textContent = 'Post a New Need';
+                    document.getElementById('need-id').value = '';
+                }
+                ngoModal.classList.remove('hidden');
+            };
+            const closeNgoModal = () => ngoModal.classList.add('hidden');
+
+            const saveNeed = (e) => {
+                e.preventDefault();
+                const id = document.getElementById('need-id').value;
+                const need = {
+                    title: document.getElementById('need-title').value,
+                    description: document.getElementById('need-description').value,
+                    category: document.getElementById('need-category').value,
+                    urgency: document.getElementById('need-urgency').value,
+                    location: document.getElementById('need-location').value,
+                    ngo: LOGGED_IN_NGO
+                };
+
+                if (id) {
+                    const index = needsData.findIndex(n => n.id == id);
+                    needsData[index] = { ...needsData[index], ...need };
+                } else {
+                    need.id = Date.now();
+                    needsData.push(need);
+                }
+                closeNgoModal();
+                renderNgoNeeds();
+            };
+
+            const deleteNeed = (needId) => {
+                if (confirm('Are you sure you want to delete this need?')) {
+                    needsData = needsData.filter(n => n.id != needId);
+                    renderNgoNeeds();
+                }
             };
 
             // --- EVENT LISTENERS ---
+            // Navigation
+            homeLink.addEventListener('click', (e) => { e.preventDefault(); showDonorView(); });
+            ngoLink.addEventListener('click', (e) => { e.preventDefault(); showNgoView(); });
+            brandLogo.addEventListener('click', (e) => { e.preventDefault(); showDonorView(); });
+
+
+            // Donor View Listeners
             filterButtonsContainer.addEventListener('click', (e) => {
                 if (e.target.classList.contains('filter-btn')) {
-                    // Update active button style
                     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-filter'));
                     e.target.classList.add('active-filter');
-
                     const category = e.target.dataset.category;
-                    const filtered = category === 'All'
-                        ? needsData
-                        : needsData.filter(need => need.category === category);
+                    const filtered = category === 'All' ? needsData : needsData.filter(need => need.category === category);
                     renderNeeds(filtered);
                 }
             });
 
             needsGrid.addEventListener('click', (e) => {
                 if (e.target.classList.contains('donate-btn')) {
-                    const needId = e.target.dataset.id;
-                    openModal(needId);
+                    openModal(e.target.dataset.id);
                 }
             });
 
             closeModalBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target.id === 'donation-modal') {
-                    closeModal(); // Close if clicking on the backdrop
-                }
+            modal.addEventListener('click', (e) => { if (e.target.id === 'donation-modal') closeModal(); });
+
+
+            // NGO View Listeners
+            ngoNeedsList.addEventListener('click', (e) => {
+                const editButton = e.target.closest('.edit-need-btn');
+                const deleteButton = e.target.closest('.delete-need-btn');
+                if (editButton) openNgoModal(editButton.dataset.id);
+                if (deleteButton) deleteNeed(deleteButton.dataset.id);
             });
+            
+            closeNgoModalBtn.addEventListener('click', closeNgoModal);
+            ngoModal.addEventListener('click', (e) => { if (e.target.id === 'ngo-modal') closeNgoModal(); });
+            postNeedBtn.addEventListener('click', () => openNgoModal());
+            ngoForm.addEventListener('submit', saveNeed);
 
             // --- INITIAL RENDER ---
-            renderNeeds(needsData);
+            renderNeeds(needsData); // Show the public donor view by default
         });
     </script>
 </body>
