@@ -73,13 +73,21 @@
             <a href="#" id="mobile-home-link" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">Home</a>
             <a href="#" id="mobile-about-link" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">About</a>
             <a href="#" id="mobile-ngo-link" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">NGO Dashboard</a>
-            <div class="border-t border-gray-200 my-2"></div>
-            <div id="mobile-auth-logged-out">
-                <a href="#" id="mobile-login-nav-btn" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">Login</a>
-                <a href="#" id="mobile-register-nav-btn" class="block py-2 px-6 text-gray-700 hover:bg-gray-100">Register</a>
-            </div>
-            <div id="mobile-auth-logged-in" class="hidden">
-                 <a href="#" id="mobile-logout-btn" class="block py-2 px-6 text-red-600 hover:bg-gray-100">Logout</a>
+            <div class="border-t border-gray-200"></div>
+            <div class="px-6 py-2">
+                <div class="flex justify-between items-center">
+                    <div id="mobile-register-wrapper">
+                        <a href="#" id="mobile-register-nav-btn" class="text-gray-700 hover:text-blue-700 font-medium">Register</a>
+                    </div>
+                    <div>
+                        <div id="mobile-login-wrapper">
+                             <a href="#" id="mobile-login-nav-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700">Login</a>
+                        </div>
+                        <div id="mobile-logout-wrapper" class="hidden">
+                             <a href="#" id="mobile-logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-600">Logout</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -349,10 +357,12 @@
         
         const loggedOutButtons = document.getElementById('auth-buttons-logged-out');
         const loggedInButtons = document.getElementById('auth-buttons-logged-in');
-        const mobileLoggedOutButtons = document.getElementById('mobile-auth-logged-out');
-        const mobileLoggedInButtons = document.getElementById('mobile-auth-logged-in');
         const welcomeMessage = document.getElementById('welcome-message');
         
+        const mobileRegisterWrapper = document.getElementById('mobile-register-wrapper');
+        const mobileLoginWrapper = document.getElementById('mobile-login-wrapper');
+        const mobileLogoutWrapper = document.getElementById('mobile-logout-wrapper');
+
         const homeLink = document.getElementById('home-link');
         const aboutLink = document.getElementById('about-link');
         const ngoLink = document.getElementById('ngo-link');
@@ -384,13 +394,15 @@
                 loggedOutButtons.classList.add('hidden');
                 loggedInButtons.classList.remove('hidden');
                 welcomeMessage.textContent = `Welcome, ${currentUser.name}!`;
-                mobileLoggedOutButtons.classList.add('hidden');
-                mobileLoggedInButtons.classList.remove('hidden');
+                mobileRegisterWrapper.classList.add('hidden');
+                mobileLoginWrapper.classList.add('hidden');
+                mobileLogoutWrapper.classList.remove('hidden');
             } else {
                 loggedInButtons.classList.add('hidden');
                 loggedOutButtons.classList.remove('hidden');
-                mobileLoggedInButtons.classList.add('hidden');
-                mobileLoggedOutButtons.classList.remove('hidden');
+                mobileRegisterWrapper.classList.remove('hidden');
+                mobileLoginWrapper.classList.remove('hidden');
+                mobileLogoutWrapper.classList.add('hidden');
             }
             const isNgo = currentUser && currentUser.type === 'ngo';
             ngoLink.style.display = isNgo ? 'block' : 'none';
