@@ -1,15 +1,24 @@
-// In backend/server.js
+// CORRECTED backend/server.js
 
-const path = require('path'); // Ensure this is at the top
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
 
-// ... other middleware
+// Import routes
+const authRoutes = require('./routes/authRoutes');
+const needsRoutes = require('./routes/needsRoutes');
 
-// This line serves static files from the project's root folder
-app.use(express.static(path.join(__dirname, '..')));
+// --- FIX IS HERE ---
+// Create the app variable immediately after imports
+const app = express();
+// -------------------
 
-// ... your API routes
+const PORT = process.env.PORT || 5000;
 
-// This catch-all route sends index.html for any page request
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'index.html'));
-});
+// Now you can use app, because it has been defined
+app.use(cors());
+app.use(express.json());
+
+// ... (the rest of your server.js code is correct)
