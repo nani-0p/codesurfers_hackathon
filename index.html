@@ -60,7 +60,6 @@
             </div>
             <div id="auth-buttons-logged-in" class="hidden md:flex items-center space-x-4">
                 <span id="welcome-message" class="text-gray-700"></span>
-                <a href="#" id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300 shadow">Logout</a>
             </div>
             
             <button id="hamburger-btn" class="md:hidden text-gray-700 focus:outline-none">
@@ -80,7 +79,6 @@
                 <div id="mobile-auth-logged-in-wrapper" class="hidden">
                     <div class="flex justify-between items-center">
                         <span id="mobile-welcome-message" class="text-gray-700"></span>
-                        <a href="#" id="mobile-logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-600">Logout</a>
                     </div>
                 </div>
             </div>
@@ -381,12 +379,10 @@
         const ngoLink = document.getElementById('ngo-link');
         const brandLogo = document.getElementById('brand-logo');
         const authNavBtn = document.getElementById('auth-nav-btn');
-        const logoutBtn = document.getElementById('logout-btn');
         const mobileHomeLink = document.getElementById('mobile-home-link');
         const mobileAboutLink = document.getElementById('mobile-about-link');
         const mobileNgoLink = document.getElementById('mobile-ngo-link');
         const mobileAuthNavBtn = document.getElementById('mobile-auth-nav-btn');
-        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
 
         const goToRegisterLink = document.getElementById('go-to-register-link');
         const goToLoginLink = document.getElementById('go-to-login-link');
@@ -454,13 +450,6 @@
             e.preventDefault();
             alert('Registration successful! Please log in.');
             showView('login-view');
-        };
-
-        const handleLogout = () => {
-            currentUser = null;
-            alert('You have been logged out.');
-            updateUI();
-            showView('donor-view');
         };
 
         // --- HELPER & RENDER FUNCTIONS ---
@@ -607,7 +596,6 @@
         [homeLink, mobileHomeLink, brandLogo].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('donor-view'); }));
         [aboutLink, mobileAboutLink].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('about-view'); }));
         [authNavBtn, mobileAuthNavBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); }));
-        [logoutBtn, mobileLogoutBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); handleLogout(); }));
         
         goToRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showView('register-view'); });
         goToLoginLink.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); });
@@ -670,3 +658,4 @@
     </script>
 </body>
 </html>
+
