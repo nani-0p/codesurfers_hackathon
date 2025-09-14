@@ -1,10 +1,10 @@
 {
   "name": "connect-care-backend",
   "version": "1.0.0",
-  "description": "...",
-  "main": "server.js", // <-- Check this line
+  "description": "Backend for the Connect & Care donation platform.",
+  "main": "server.js",
   "scripts": {
-    "start": "node server.js" // <-- And check this line
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,9 +15,5 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.22"
   }
 }
-
