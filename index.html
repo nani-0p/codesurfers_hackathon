@@ -79,6 +79,7 @@
                 <div id="mobile-auth-logged-in-wrapper" class="hidden">
                     <div class="flex justify-between items-center">
                         <span id="mobile-welcome-message" class="text-gray-700"></span>
+                        <a href="#" id="mobile-logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-600">Logout</a>
                     </div>
                 </div>
             </div>
@@ -373,6 +374,7 @@
         const mobileLoggedOutWrapper = document.getElementById('mobile-auth-logged-out-wrapper');
         const mobileLoggedInWrapper = document.getElementById('mobile-auth-logged-in-wrapper');
         const mobileWelcomeMessage = document.getElementById('mobile-welcome-message');
+        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
 
         const homeLink = document.getElementById('home-link');
         const aboutLink = document.getElementById('about-link');
@@ -450,6 +452,13 @@
             e.preventDefault();
             alert('Registration successful! Please log in.');
             showView('login-view');
+        };
+
+        const handleLogout = () => {
+            currentUser = null;
+            alert('You have been logged out.');
+            updateUI();
+            showView('donor-view');
         };
 
         // --- HELPER & RENDER FUNCTIONS ---
@@ -597,6 +606,8 @@
         [aboutLink, mobileAboutLink].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('about-view'); }));
         [authNavBtn, mobileAuthNavBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); }));
         
+        [mobileLogoutBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); handleLogout(); }));
+
         goToRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showView('register-view'); });
         goToLoginLink.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); });
 
