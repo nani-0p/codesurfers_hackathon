@@ -107,6 +107,8 @@
                         <button data-category="Food" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Food</button>
                         <button data-category="Blood" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Blood</button>
                         <button data-category="Essentials" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Essentials</button>
+                        <button data-category="Organs" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Organs</button>
+                        <button data-category="Funding" class="filter-btn text-sm md:text-base font-medium px-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">Funding</button>
                     </div>
                     <div id="needs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
                 </div>
@@ -319,7 +321,7 @@
                         <div>
                             <label for="need-category" class="block text-sm font-medium text-gray-700">Category</label>
                             <select id="need-category" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                <option>Food</option> <option>Blood</option> <option>Essentials</option>
+                                <option>Food</option> <option>Blood</option> <option>Essentials</option> <option>Organs</option> <option>Funding</option>
                             </select>
                         </div>
                         <div>
@@ -356,6 +358,8 @@
             { id: 6, category: 'Blood', ngo: 'Lifeblood Bank', title: 'A+ Blood Donors for Stock', description: 'We are looking to increase our reserves of A-positive blood. We encourage healthy individuals to donate.', location: 'Banjara Hills, Hyderabad', urgency: 'Low' },
             { id: 7, category: 'Food', ngo: 'Sunrise Shelter', title: 'Surplus food from Events/Parties', description: 'We can collect leftover, untouched food from weddings, corporate events, or parties to distribute to the needy.', location: 'Hyderabad, Telangana', urgency: 'Medium' },
             { id: 8, category: 'Essentials', ngo: 'Children\'s Education Trust', title: 'Notebooks and Stationery', description: 'We need 500 notebooks, pens, and pencils for the upcoming school term for underprivileged students.', location: 'Kukatpally, Hyderabad', urgency: 'High' },
+            { id: 9, category: 'Organs', ngo: 'LifeLine Transplants', title: 'Kidney needed for patient', description: 'A patient with end-stage renal disease is in urgent need of a kidney transplant. Blood type B+.', location: 'Ameerpet, Hyderabad', urgency: 'Critical' },
+            { id: 10, category: 'Funding', ngo: 'Children\'s Education Trust', title: 'Funding for School Supplies', description: 'Seeking funds to purchase new textbooks and digital learning tools for 100 students for the new academic year.', location: 'Kukatpally, Hyderabad', urgency: 'High' }
         ];
 
         // --- DOM Elements ---
@@ -401,8 +405,10 @@
         // --- CORE APP LOGIC ---
         const updateUI = () => {
             if (currentUser) {
+                loggedInButtons.classList.remove('hidden');
+                loggedInButtons.classList.add('md:flex');
                 loggedOutButtons.classList.add('hidden');
-                loggedInButtons.classList.add('hidden'); 
+                welcomeMessage.textContent = `Welcome, ${currentUser.name}!`;
                 
                 mobileLoggedOutWrapper.classList.add('hidden');
                 mobileLoggedInWrapper.classList.remove('hidden');
@@ -472,6 +478,8 @@
                 case 'food': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M10 14a2 2 0 104 0h-4z"></path></svg>`;
                 case 'blood': return `<svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98S17.51 2.02 12 2.02zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.58-12.03l-4.24 4.24c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L12.99 7.97c-.39-.39-1.02-.39-1.41 0z"></path></svg>`;
                 case 'essentials': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>`;
+                case 'organs': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>`;
+                case 'funding': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 6v-1h4v1m-4 10v1h4v-1m-4-10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`;
                 default: return '';
             }
         };
