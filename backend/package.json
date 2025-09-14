@@ -1,11 +1,10 @@
 {
   "name": "connect-care-backend",
   "version": "1.0.0",
-  "description": "Backend for the Connect & Care donation platform.",
-  "main": "server.js",
+  "description": "...",
+  "main": "server.js", // <-- Check this line
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server.js" // <-- And check this line
   },
   "author": "",
   "license": "ISC",
