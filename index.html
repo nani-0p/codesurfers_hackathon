@@ -7,6 +7,14 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          // Initialize EmailJS with your Public Key
+          emailjs.init("K4I1p-MAJkOzMlbIn");
+       })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -298,7 +306,7 @@
                 </div>
             </div>
             <div class="p-6 bg-gray-50 rounded-b-lg flex justify-end">
-                <button class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">Pledge Donation</button>
+                <button id="confirm-pledge-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">Pledge Donation</button>
             </div>
         </div>
     </div>
@@ -367,6 +375,11 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // --- EMAILJS CONFIGURATION ---
+    const EMAILJS_SERVICE_ID = "service_hju1k7p"; 
+    const TEMP_ID_NGO = "template_jhyltvx"; 
+    const TEMP_ID_DONOR = "template_o8lxsdn";
+
     // --- DOM ELEMENTS (Global) ---
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -401,6 +414,7 @@
     const filterButtonsContainer = document.getElementById('filter-buttons');
     const donationModal = document.getElementById('donation-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
+    const confirmPledgeBtn = document.getElementById('confirm-pledge-btn'); // The new Pledge Button
     const ngoNeedsList = document.getElementById('ngo-needs-list');
     const ngoModal = document.getElementById('ngo-modal');
     const closeNgoModalBtn = document.getElementById('close-ngo-modal-btn');
@@ -410,6 +424,7 @@
     // --- STATE MANAGEMENT ---
     let currentUserData = null; // Stores the custom user data (role, name) from Firestore
     let allNeedsData = []; // Stores the needs fetched from Firestore
+    let currentSelectedNeed = null; // Tracks which need is open in the modal
 
     // --- AUTHENTICATION LOGIC ---
 
@@ -568,6 +583,60 @@
         }
     };
 
+    // --- EMAIL PLEDGE LOGIC ---
+    const handlePledge = async () => {
+        if (!currentUserData) {
+            alert("Please login to donate.");
+            closeDonationModal();
+            showView('login-view');
+            return;
+        }
+
+        confirmPledgeBtn.innerText = "Processing...";
+        confirmPledgeBtn.disabled = true;
+
+        try {
+            // 1. Fetch NGO Email from 'users' collection using ngoId
+            // We need to get the user document of the NGO who posted the need to get their email
+            const ngoDoc = await getDoc(doc(db, "users", currentSelectedNeed.ngoId));
+            const ngoEmail = ngoDoc.exists() ? ngoDoc.data().email : "";
+
+            // 2. Prepare Email Parameters
+            // Data for Donor Email
+            const donorParams = {
+                donor_name: currentUserData.name,
+                ngo_name: currentSelectedNeed.ngoName,
+                location: currentSelectedNeed.location,
+                description: currentSelectedNeed.description,
+                to_email: currentUserData.email // Send to Donor
+            };
+
+            // Data for NGO Email
+            const ngoParams = {
+                ngo_name: currentSelectedNeed.ngoName,
+                donor_name: currentUserData.name,
+                donor_email: currentUserData.email,
+                need_title: currentSelectedNeed.title,
+                to_email: ngoEmail // Send to NGO
+            };
+
+            // 3. Send Emails via EmailJS
+            await emailjs.send(EMAILJS_SERVICE_ID, TEMP_ID_DONOR, donorParams);
+            await emailjs.send(EMAILJS_SERVICE_ID, TEMP_ID_NGO, ngoParams);
+
+            alert("Thank you! A confirmation email has been sent to you, and the NGO has been notified.");
+            closeDonationModal();
+
+        } catch (error) {
+            console.error("Email Error:", error);
+            alert("Pledge recorded, but failed to send email. Please contact the NGO directly at the location.");
+            closeDonationModal();
+        } finally {
+            confirmPledgeBtn.innerText = "Pledge Donation";
+            confirmPledgeBtn.disabled = false;
+        }
+    };
+
 
     // --- UI HELPERS & RENDERING ---
 
@@ -702,6 +771,7 @@
     const openDonationModal = (needId) => {
         const need = allNeedsData.find(n => n.id == needId);
         if (need) {
+            currentSelectedNeed = need; // Store currently selected need
             donationModal.querySelector('#modal-title').textContent = need.title;
             donationModal.querySelector('#modal-ngo').textContent = need.ngoName;
             donationModal.querySelector('#modal-location').textContent = need.location;
@@ -709,7 +779,10 @@
             donationModal.classList.remove('hidden');
         }
     };
-    const closeDonationModal = () => donationModal.classList.add('hidden');
+    const closeDonationModal = () => {
+        donationModal.classList.add('hidden');
+        currentSelectedNeed = null;
+    };
     
     const openNgoModal = (needId = null) => {
         ngoForm.reset();
@@ -797,6 +870,11 @@
         if (e.target.closest('.edit-need-btn')) openNgoModal(e.target.closest('.edit-need-btn').dataset.id);
         if (e.target.closest('.delete-need-btn')) deleteNeed(e.target.closest('.delete-need-btn').dataset.id);
     });
+
+    // NEW: Pledge Listener
+    if(confirmPledgeBtn) {
+        confirmPledgeBtn.addEventListener('click', handlePledge);
+    }
 
     if(closeModalBtn) closeModalBtn.addEventListener('click', closeDonationModal);
     donationModal.addEventListener('click', (e) => { if (e.target.id === 'donation-modal') closeDonationModal(); });
