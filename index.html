@@ -159,130 +159,238 @@
 
 
     <!-- JavaScript Logic -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <script type="module">
+        // 1. Import Firebase Functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-            // --- DATA (Simulating a database) ---
-            const needsData = [
-                { id: 1, category: 'Food', ngo: 'Sunrise Shelter', title: 'Urgent Need for 50 Dinner Meals', description: 'We require 50 freshly prepared, nutritious dinner meals for our residents tonight. Vegetarian options preferred.', location: 'Hyderabad, Telangana', urgency: 'High' },
-                { id: 2, category: 'Blood', ngo: 'City Central Hospital', title: 'O-Negative Blood for Emergency Surgery', description: 'A patient is in critical condition and requires 2 units of O-negative blood immediately for an emergency surgery.', location: 'Secunderabad, Telangana', urgency: 'Critical' },
-                { id: 3, category: 'Essentials', ngo: 'Hope Foundation Orphanage', title: 'Winter Blankets for Children', description: 'With the cold season approaching, we need 100 warm blankets for the children at our facility.', location: 'Gachibowli, Hyderabad', urgency: 'Medium' },
-                { id: 4, category: 'Food', ngo: 'Community Kitchen', title: 'Weekly Grocery Stock Up', description: 'We need non-perishable items like rice, lentils, flour, and cooking oil to prepare meals for the next week.', location: 'Madhapur, Hyderabad', urgency: 'Medium' },
-                { id: 5, category: 'Essentials', ngo: 'Animal Care Shelter', title: 'Dog & Cat Food Supplies', description: 'Our shelter is running low on dry food for dogs and cats. Any brand is appreciated.', location: 'Jubilee Hills, Hyderabad', urgency: 'Low' },
-                { id: 6, category: 'Blood', ngo: 'Lifeblood Bank', title: 'A+ Blood Donors for Stock', description: 'We are looking to increase our reserves of A-positive blood. We encourage healthy individuals to donate.', location: 'Banjara Hills, Hyderabad', urgency: 'Low' },
-                { id: 7, category: 'Food', ngo: 'The Helping Hand', title: 'Surplus food from Events/Parties', description: 'We can collect leftover, untouched food from weddings, corporate events, or parties to distribute to the needy.', location: 'Hyderabad, Telangana', urgency: 'Medium' },
-                { id: 8, category: 'Essentials', ngo: 'Children\'s Education Trust', title: 'Notebooks and Stationery', description: 'We need 500 notebooks, pens, and pencils for the upcoming school term for underprivileged students.', location: 'Kukatpally, Hyderabad', urgency: 'High' },
-            ];
+        // 2. Your Web App's Firebase Configuration
+        // PASTE YOUR CONFIG FROM FIREBASE CONSOLE HERE
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQ3zMXWqzBs91mE8VNk3ew7HV2fwRwggI", 
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "connect-and-care-cbd9d",
+            storageBucket: "connect-and-care-cbd9d.firebasestorage.app",
+            messagingSenderId: "1069709651068",
+            appId: "1:1069709651068:web:b5747ffd1cd8dfc4e42df9"
+        };
 
-            // --- DOM Elements ---
-            const needsGrid = document.getElementById('needs-grid');
-            const filterButtonsContainer = document.getElementById('filter-buttons');
-            const modal = document.getElementById('donation-modal');
-            const closeModalBtn = document.getElementById('close-modal-btn');
+        // 3. Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-            // --- HELPER FUNCTIONS ---
-            const getUrgencyClass = (urgency) => {
-                switch (urgency.toLowerCase()) {
-                    case 'critical': return 'bg-red-600';
-                    case 'high': return 'bg-orange-500';
-                    case 'medium': return 'bg-yellow-500';
-                    default: return 'bg-green-500';
-                }
-            };
+        // --- DOM Elements ---
+        const needsGrid = document.getElementById('needs-grid');
+        const filterButtonsContainer = document.getElementById('filter-buttons');
+        const modal = document.getElementById('donation-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const pledgeBtn = document.querySelector('#donation-modal button.bg-blue-600'); // The pledge button
+        
+        // State variables
+        let currentNeedsData = [];
+        let selectedNeedId = null;
 
-            const getCategoryIcon = (category) => {
-                switch (category.toLowerCase()) {
-                    case 'food': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l1.09 2.18L15 6l-2.18 1.09L12 9.27l-1.09-2.18L9 6l2.18-1.09L12 2.73zM12 21a9 9 0 100-18 9 9 0 000 18z"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M10 14a2 2 0 104 0h-4z"></path>`; // Simplified food icon
-                    case 'blood': return `<svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98S17.51 2.02 12 2.02zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.58-12.03l-4.24 4.24c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L12.99 7.97c-.39-.39-1.02-.39-1.41 0z"></path></svg>`; // Blood drop
-                    case 'essentials': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>`; // Gift Box
-                    default: return '';
-                }
-            };
+        // --- HARDCODED DATA FOR SEEDING (Run once) ---
+        // This allows us to upload your existing data to the database easily
+        const initialData = [
+            { category: 'Food', ngo: 'Sunrise Shelter', title: 'Urgent Need for 50 Dinner Meals', description: 'We require 50 freshly prepared, nutritious dinner meals for our residents tonight. Vegetarian options preferred.', location: 'Hyderabad, Telangana', urgency: 'High' },
+            { category: 'Blood', ngo: 'City Central Hospital', title: 'O-Negative Blood for Emergency Surgery', description: 'A patient is in critical condition and requires 2 units of O-negative blood immediately for an emergency surgery.', location: 'Secunderabad, Telangana', urgency: 'Critical' },
+            { category: 'Essentials', ngo: 'Hope Foundation Orphanage', title: 'Winter Blankets for Children', description: 'With the cold season approaching, we need 100 warm blankets for the children at our facility.', location: 'Gachibowli, Hyderabad', urgency: 'Medium' },
+            { category: 'Food', ngo: 'Community Kitchen', title: 'Weekly Grocery Stock Up', description: 'We need non-perishable items like rice, lentils, flour, and cooking oil to prepare meals for the next week.', location: 'Madhapur, Hyderabad', urgency: 'Medium' },
+            { category: 'Essentials', ngo: 'Animal Care Shelter', title: 'Dog & Cat Food Supplies', description: 'Our shelter is running low on dry food for dogs and cats. Any brand is appreciated.', location: 'Jubilee Hills, Hyderabad', urgency: 'Low' },
+            { category: 'Blood', ngo: 'Lifeblood Bank', title: 'A+ Blood Donors for Stock', description: 'We are looking to increase our reserves of A-positive blood. We encourage healthy individuals to donate.', location: 'Banjara Hills, Hyderabad', urgency: 'Low' },
+            { category: 'Food', ngo: 'The Helping Hand', title: 'Surplus food from Events/Parties', description: 'We can collect leftover, untouched food from weddings, corporate events, or parties to distribute to the needy.', location: 'Hyderabad, Telangana', urgency: 'Medium' },
+            { category: 'Essentials', ngo: 'Children\'s Education Trust', title: 'Notebooks and Stationery', description: 'We need 500 notebooks, pens, and pencils for the upcoming school term for underprivileged students.', location: 'Kukatpally, Hyderabad', urgency: 'High' },
+        ];
+
+        // --- FUNCTIONS ---
+
+        // A. Fetch Data from Firebase
+        async function fetchNeeds() {
+            needsGrid.innerHTML = '<p class="text-center col-span-3">Loading needs from database...</p>';
             
-            // --- RENDER FUNCTION ---
-            const renderNeeds = (filteredNeeds) => {
-                needsGrid.innerHTML = ''; // Clear existing grid
-                if (filteredNeeds.length === 0) {
-                    needsGrid.innerHTML = `<p class="text-center text-gray-500 md:col-span-2 lg:col-span-3">No needs found for this category.</p>`;
-                    return;
+            try {
+                const querySnapshot = await getDocs(collection(db, "needs"));
+                currentNeedsData = [];
+                
+                querySnapshot.forEach((doc) => {
+                    // Combine the ID and the data
+                    currentNeedsData.push({ id: doc.id, ...doc.data() });
+                });
+
+                // If database is empty, offer to seed it
+                if (currentNeedsData.length === 0) {
+                    needsGrid.innerHTML = `
+                        <div class="col-span-3 text-center">
+                            <p class="mb-4">Database is empty.</p>
+                            <button onclick="seedDatabase()" id="seed-btn" class="bg-green-600 text-white px-4 py-2 rounded">Upload Initial Data</button>
+                        </div>`;
+                        // Note: We have to attach seedDatabase to window so the HTML button can see it inside the module
+                        window.seedDatabase = seedDatabase;
+                } else {
+                    renderNeeds(currentNeedsData);
                 }
 
-                filteredNeeds.forEach(need => {
-                    const card = `
-                        <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
-                            <div class="p-6">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex items-center gap-4">
-                                        <div class="p-3 rounded-full ${getUrgencyClass(need.urgency)}">
-                                            ${getCategoryIcon(need.category)}
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-blue-600">${need.category}</p>
-                                            <h3 class="text-lg font-bold text-gray-900">${need.title}</h3>
-                                        </div>
+            } catch (error) {
+                console.error("Error fetching documents: ", error);
+                needsGrid.innerHTML = '<p class="text-red-500 text-center col-span-3">Error loading data. Check console.</p>';
+            }
+        }
+
+        // B. Seed Database (Upload initial data)
+        async function seedDatabase() {
+            const btn = document.getElementById('seed-btn');
+            btn.innerText = "Uploading...";
+            btn.disabled = true;
+
+            for (const item of initialData) {
+                await addDoc(collection(db, "needs"), item);
+            }
+            
+            alert("Data uploaded! Refreshing...");
+            fetchNeeds();
+        }
+
+        // C. Pledge Donation (Send data to Firebase)
+        async function handlePledge() {
+            if(!selectedNeedId) return;
+
+            const pledgeBtnText = pledgeBtn.innerText;
+            pledgeBtn.innerText = "Processing...";
+            pledgeBtn.disabled = true;
+
+            try {
+                // Determine which need is being pledged to
+                const needDetails = currentNeedsData.find(n => n.id === selectedNeedId);
+
+                // Add to 'pledges' collection in Firebase
+                await addDoc(collection(db, "pledges"), {
+                    needId: selectedNeedId,
+                    ngoName: needDetails.ngo,
+                    needTitle: needDetails.title,
+                    pledgedAt: serverTimestamp(),
+                    status: "pending" // You could add user info here later
+                });
+
+                alert("Thank you! Your pledge has been recorded. The NGO will contact you.");
+                closeModal();
+
+            } catch (error) {
+                console.error("Error pledging:", error);
+                alert("Something went wrong. Please try again.");
+            } finally {
+                pledgeBtn.innerText = "Pledge Donation";
+                pledgeBtn.disabled = false;
+            }
+        }
+
+        // D. Render Functions (Visuals)
+        const getUrgencyClass = (urgency) => {
+            switch (urgency?.toLowerCase()) {
+                case 'critical': return 'bg-red-600';
+                case 'high': return 'bg-orange-500';
+                case 'medium': return 'bg-yellow-500';
+                default: return 'bg-green-500';
+            }
+        };
+
+        const getCategoryIcon = (category) => {
+             // (Keeping your existing SVG logic - simplified for brevity in this snippet, 
+             // but ensure you copy your switch statement back here or use the one below)
+             if(category === 'Food') return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+             if(category === 'Blood') return `<svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98S17.51 2.02 12 2.02zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.58-12.03l-4.24 4.24c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L12.99 7.97c-.39-.39-1.02-.39-1.41 0z"></path></svg>`;
+             return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>`;
+        };
+
+        const renderNeeds = (filteredNeeds) => {
+            needsGrid.innerHTML = '';
+            if (filteredNeeds.length === 0) {
+                needsGrid.innerHTML = `<p class="text-center text-gray-500 md:col-span-2 lg:col-span-3">No needs found for this category.</p>`;
+                return;
+            }
+
+            filteredNeeds.forEach(need => {
+                const card = `
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <div class="p-6">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="p-3 rounded-full ${getUrgencyClass(need.urgency)}">
+                                        ${getCategoryIcon(need.category)}
                                     </div>
-                                    <div class="text-xs font-bold text-white px-2 py-1 rounded-full ${getUrgencyClass(need.urgency)}">${need.urgency}</div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-blue-600">${need.category}</p>
+                                        <h3 class="text-lg font-bold text-gray-900">${need.title}</h3>
+                                    </div>
                                 </div>
-                                <p class="text-gray-600 mt-4">${need.description.substring(0, 100)}...</p>
-                                <div class="mt-6 flex justify-between items-center">
-                                    <p class="text-sm text-gray-500">${need.ngo} - ${need.location}</p>
-                                    <button class="donate-btn bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-lg hover:bg-blue-200 transition" data-id="${need.id}">Donate</button>
-                                </div>
+                                <div class="text-xs font-bold text-white px-2 py-1 rounded-full ${getUrgencyClass(need.urgency)}">${need.urgency}</div>
+                            </div>
+                            <p class="text-gray-600 mt-4">${need.description.substring(0, 100)}...</p>
+                            <div class="mt-6 flex justify-between items-center">
+                                <p class="text-sm text-gray-500">${need.ngo} - ${need.location}</p>
+                                <button class="donate-btn bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-lg hover:bg-blue-200 transition" data-id="${need.id}">Donate</button>
                             </div>
                         </div>
-                    `;
-                    needsGrid.innerHTML += card;
-                });
-            };
-
-            // --- MODAL LOGIC ---
-            const openModal = (needId) => {
-                const need = needsData.find(n => n.id == needId);
-                if (need) {
-                    document.getElementById('modal-title').textContent = need.title;
-                    document.getElementById('modal-ngo').textContent = need.ngo;
-                    document.getElementById('modal-location').textContent = need.location;
-                    document.getElementById('modal-description').textContent = need.description;
-                    modal.classList.remove('hidden');
-                }
-            };
-
-            const closeModal = () => {
-                modal.classList.add('hidden');
-            };
-
-            // --- EVENT LISTENERS ---
-            filterButtonsContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('filter-btn')) {
-                    // Update active button style
-                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-filter'));
-                    e.target.classList.add('active-filter');
-
-                    const category = e.target.dataset.category;
-                    const filtered = category === 'All'
-                        ? needsData
-                        : needsData.filter(need => need.category === category);
-                    renderNeeds(filtered);
-                }
+                    </div>
+                `;
+                needsGrid.innerHTML += card;
             });
+        };
 
-            needsGrid.addEventListener('click', (e) => {
-                if (e.target.classList.contains('donate-btn')) {
-                    const needId = e.target.dataset.id;
-                    openModal(needId);
-                }
-            });
+        // --- MODAL LOGIC ---
+        const openModal = (needId) => {
+            selectedNeedId = needId; // Store global selected ID
+            const need = currentNeedsData.find(n => n.id === needId);
+            
+            if (need) {
+                document.getElementById('modal-title').textContent = need.title;
+                document.getElementById('modal-ngo').textContent = need.ngo;
+                document.getElementById('modal-location').textContent = need.location;
+                document.getElementById('modal-description').textContent = need.description;
+                modal.classList.remove('hidden');
+            }
+        };
 
-            closeModalBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target.id === 'donation-modal') {
-                    closeModal(); // Close if clicking on the backdrop
-                }
-            });
+        const closeModal = () => {
+            selectedNeedId = null;
+            modal.classList.add('hidden');
+        };
 
-            // --- INITIAL RENDER ---
-            renderNeeds(needsData);
+        // --- EVENT LISTENERS ---
+        
+        // 1. Filter Logic
+        filterButtonsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-filter'));
+                e.target.classList.add('active-filter');
+
+                const category = e.target.dataset.category;
+                const filtered = category === 'All'
+                    ? currentNeedsData
+                    : currentNeedsData.filter(need => need.category === category);
+                renderNeeds(filtered);
+            }
         });
+
+        // 2. Open Modal Logic (Delegation)
+        needsGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('donate-btn')) {
+                const needId = e.target.dataset.id;
+                openModal(needId);
+            }
+        });
+
+        // 3. Modal Controls
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target.id === 'donation-modal') closeModal();
+        });
+        
+        // 4. Pledge Action (Write to Firebase)
+        pledgeBtn.addEventListener('click', handlePledge);
+
+        // --- INITIAL LOAD ---
+        fetchNeeds();
     </script>
 </body>
 </html>
