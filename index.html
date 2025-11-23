@@ -58,8 +58,12 @@
             <div id="auth-buttons-logged-out" class="hidden md:flex items-center space-x-4">
                 <a href="#" id="auth-nav-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 shadow">Login / Register</a>
             </div>
+
             <div id="auth-buttons-logged-in" class="hidden md:flex items-center space-x-4">
-                <span id="welcome-message" class="text-gray-700"></span>
+                <span id="welcome-message" class="text-gray-700 font-medium"></span>
+                <button id="desktop-logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300 shadow">
+                    Logout
+                </button>
             </div>
             
             <button id="hamburger-btn" class="md:hidden text-gray-700 focus:outline-none">
@@ -349,7 +353,6 @@
     import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, deleteDoc, updateDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // --- FIREBASE CONFIGURATION ---
-    // PASTE YOUR CONFIG FROM FIREBASE CONSOLE HERE
     const firebaseConfig = {
         apiKey: "AIzaSyCQ3zMXWqzBs91mE8VNk3ew7HV2fwRwggI",
         authDomain: "connect-and-care-cbd9d.firebaseapp.com",
@@ -507,7 +510,6 @@
     // --- DATABASE LOGIC (NEEDS) ---
 
     // 1. Real-time Listener for ALL Needs (Public Feed)
-    // This runs automatically when data changes in the database
     onSnapshot(collection(db, "needs"), (snapshot) => {
         allNeedsData = snapshot.docs.map(doc => ({
             id: doc.id,
@@ -568,8 +570,6 @@
 
 
     // --- UI HELPERS & RENDERING ---
-
-   // --- UI HELPERS & RENDERING ---
 
     const updateUI = (isLoggedIn) => {
         if (isLoggedIn) {
@@ -632,7 +632,6 @@
     };
 
     const getCategoryIcon = (category) => {
-        // (Same SVG logic as before - abbreviated for brevity, but functionality is identical)
          switch (category.toLowerCase()) {
             case 'food': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M10 14a2 2 0 104 0h-4z"></path></svg>`;
             case 'blood': return `<svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98S17.51 2.02 12 2.02zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.58-12.03l-4.24 4.24c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L12.99 7.97c-.39-.39-1.02-.39-1.41 0z"></path></svg>`;
@@ -677,7 +676,6 @@
         if (!currentUserData || currentUserData.type !== 'ngo') return;
         
         ngoNeedsList.innerHTML = '';
-        // Filter needs that belong to this NGO
         const myNeeds = allNeedsData.filter(need => need.ngoId === currentUserData.uid);
         
         if(myNeeds.length === 0){
@@ -739,6 +737,17 @@
     document.getElementById('ngo-login-form').addEventListener('submit', (e) => handleLogin(e, 'ngo'));
     document.getElementById('donor-register-form').addEventListener('submit', handleRegister);
     document.getElementById('ngo-register-form').addEventListener('submit', handleRegister);
+
+    // Desktop Logout Listener
+    const desktopLogoutBtn = document.getElementById('desktop-logout-btn');
+    if(desktopLogoutBtn) {
+        desktopLogoutBtn.addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            handleLogout(); 
+        });
+    }
+
+    // Mobile Logout Listener
     [mobileLogoutBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); handleLogout(); }));
 
     // Navigation listeners
@@ -798,7 +807,6 @@
 
     // Initial View
     updateUI(false); 
-</script>
+    </script>
 </body>
 </html>
-
