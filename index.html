@@ -569,23 +569,44 @@
 
     // --- UI HELPERS & RENDERING ---
 
+   // --- UI HELPERS & RENDERING ---
+
     const updateUI = (isLoggedIn) => {
         if (isLoggedIn) {
+            // SHOW Logged In buttons
             loggedInButtons.classList.remove('hidden');
-            loggedInButtons.classList.add('md:flex');
+            loggedInButtons.classList.add('flex'); // Ensure it displays
+            loggedInButtons.classList.add('md:flex'); // Restore desktop display
+
+            // HIDE Logged Out buttons
             loggedOutButtons.classList.add('hidden');
+            loggedOutButtons.classList.remove('flex'); // Remove display
+            loggedOutButtons.classList.remove('md:flex'); // CRITICAL: Remove desktop override
+
+            // Update text
             welcomeMessage.textContent = `Welcome, ${currentUserData.name}!`;
             
+            // Mobile Menu Logic
             mobileLoggedOutWrapper.classList.add('hidden');
             mobileLoggedInWrapper.classList.remove('hidden');
             mobileWelcomeMessage.textContent = `Welcome, ${currentUserData.name}!`;
         } else {
+            // HIDE Logged In buttons
             loggedInButtons.classList.add('hidden');
+            loggedInButtons.classList.remove('flex');
+            loggedInButtons.classList.remove('md:flex'); // CRITICAL: Remove desktop override
+
+            // SHOW Logged Out buttons
             loggedOutButtons.classList.remove('hidden');
+            loggedOutButtons.classList.add('flex');
+            loggedOutButtons.classList.add('md:flex'); // Restore desktop display
+
+            // Mobile Menu Logic
             mobileLoggedInWrapper.classList.add('hidden');
             mobileLoggedOutWrapper.classList.remove('hidden');
         }
         
+        // Show/Hide NGO Link
         const isNgo = currentUserData && currentUserData.type === 'ngo';
         ngoLink.style.display = isNgo ? 'block' : 'none';
         mobileNgoLink.style.display = isNgo ? 'block' : 'none';
