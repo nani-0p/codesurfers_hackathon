@@ -342,331 +342,442 @@
         </div>
     </div>
     
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, deleteDoc, updateDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- STATE MANAGEMENT ---
-        let currentUser = null;
-        const LOGGED_IN_NGO_NAME = 'Sunrise Shelter';
-        let needsData = [
-            { id: 1, category: 'Food', ngo: 'Sunrise Shelter', title: 'Urgent Need for 50 Dinner Meals', description: 'We require 50 freshly prepared, nutritious dinner meals for our residents tonight. Vegetarian options preferred.', location: 'Hyderabad, Telangana', urgency: 'High' },
-            { id: 2, category: 'Blood', ngo: 'City Central Hospital', title: 'O-Negative Blood for Emergency Surgery', description: 'A patient is in critical condition and requires 2 units of O-negative blood immediately for an emergency surgery.', location: 'Secunderabad, Telangana', urgency: 'Critical' },
-            { id: 3, category: 'Essentials', ngo: 'Hope Foundation Orphanage', title: 'Winter Blankets for Children', description: 'With the cold season approaching, we need 100 warm blankets for the children at our facility.', location: 'Gachibowli, Hyderabad', urgency: 'Medium' },
-            { id: 4, category: 'Food', ngo: 'Community Kitchen', title: 'Weekly Grocery Stock Up', description: 'We need non-perishable items like rice, lentils, flour, and cooking oil to prepare meals for the next week.', location: 'Madhapur, Hyderabad', urgency: 'Medium' },
-            { id: 5, category: 'Essentials', ngo: 'Animal Care Shelter', title: 'Dog & Cat Food Supplies', description: 'Our shelter is running low on dry food for dogs and cats. Any brand is appreciated.', location: 'Jubilee Hills, Hyderabad', urgency: 'Low' },
-            { id: 6, category: 'Blood', ngo: 'Lifeblood Bank', title: 'A+ Blood Donors for Stock', description: 'We are looking to increase our reserves of A-positive blood. We encourage healthy individuals to donate.', location: 'Banjara Hills, Hyderabad', urgency: 'Low' },
-            { id: 7, category: 'Food', ngo: 'Sunrise Shelter', title: 'Surplus food from Events/Parties', description: 'We can collect leftover, untouched food from weddings, corporate events, or parties to distribute to the needy.', location: 'Hyderabad, Telangana', urgency: 'Medium' },
-            { id: 8, category: 'Essentials', ngo: 'Children\'s Education Trust', title: 'Notebooks and Stationery', description: 'We need 500 notebooks, pens, and pencils for the upcoming school term for underprivileged students.', location: 'Kukatpally, Hyderabad', urgency: 'High' },
-            { id: 9, category: 'Organs', ngo: 'LifeLine Transplants', title: 'Kidney needed for patient', description: 'A patient with end-stage renal disease is in urgent need of a kidney transplant. Blood type B+.', location: 'Ameerpet, Hyderabad', urgency: 'Critical' },
-            { id: 10, category: 'Funding', ngo: 'Children\'s Education Trust', title: 'Funding for School Supplies', description: 'Seeking funds to purchase new textbooks and digital learning tools for 100 students for the new academic year.', location: 'Kukatpally, Hyderabad', urgency: 'High' }
-        ];
+    // --- FIREBASE CONFIGURATION ---
+    // PASTE YOUR CONFIG FROM FIREBASE CONSOLE HERE
+    const firebaseConfig = {
+        apiKey: "AIzaSyCQ3zMXWqzBs91mE8VNk3ew7HV2fwRwggI",
+        authDomain: "connect-and-care-cbd9d.firebaseapp.com",
+        projectId: "connect-and-care-cbd9d",
+        storageBucket: "connect-and-care-cbd9d.firebasestorage.app",
+        messagingSenderId: "1069709651068",
+        appId: "1:1069709651068:web:b5747ffd1cd8dfc4e42df9"
+    };
 
-        // --- DOM Elements ---
-        const hamburgerBtn = document.getElementById('hamburger-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mainViews = document.querySelectorAll('.main-view');
-        const navLinks = document.querySelectorAll('.nav-link');
-        
-        const loggedOutButtons = document.getElementById('auth-buttons-logged-out');
-        const loggedInButtons = document.getElementById('auth-buttons-logged-in');
-        const welcomeMessage = document.getElementById('welcome-message');
-        
-        const mobileLoggedOutWrapper = document.getElementById('mobile-auth-logged-out-wrapper');
-        const mobileLoggedInWrapper = document.getElementById('mobile-auth-logged-in-wrapper');
-        const mobileWelcomeMessage = document.getElementById('mobile-welcome-message');
-        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        const homeLink = document.getElementById('home-link');
-        const aboutLink = document.getElementById('about-link');
-        const ngoLink = document.getElementById('ngo-link');
-        const brandLogo = document.getElementById('brand-logo');
-        const authNavBtn = document.getElementById('auth-nav-btn');
-        const mobileHomeLink = document.getElementById('mobile-home-link');
-        const mobileAboutLink = document.getElementById('mobile-about-link');
-        const mobileNgoLink = document.getElementById('mobile-ngo-link');
-        const mobileAuthNavBtn = document.getElementById('mobile-auth-nav-btn');
+    // --- DOM ELEMENTS (Global) ---
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mainViews = document.querySelectorAll('.main-view');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    // Auth UI Elements
+    const loggedOutButtons = document.getElementById('auth-buttons-logged-out');
+    const loggedInButtons = document.getElementById('auth-buttons-logged-in');
+    const welcomeMessage = document.getElementById('welcome-message');
+    const mobileLoggedOutWrapper = document.getElementById('mobile-auth-logged-out-wrapper');
+    const mobileLoggedInWrapper = document.getElementById('mobile-auth-logged-in-wrapper');
+    const mobileWelcomeMessage = document.getElementById('mobile-welcome-message');
+    const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
 
-        const goToRegisterLink = document.getElementById('go-to-register-link');
-        const goToLoginLink = document.getElementById('go-to-login-link');
+    // Navigation
+    const homeLink = document.getElementById('home-link');
+    const aboutLink = document.getElementById('about-link');
+    const ngoLink = document.getElementById('ngo-link');
+    const brandLogo = document.getElementById('brand-logo');
+    const authNavBtn = document.getElementById('auth-nav-btn');
+    const mobileHomeLink = document.getElementById('mobile-home-link');
+    const mobileAboutLink = document.getElementById('mobile-about-link');
+    const mobileNgoLink = document.getElementById('mobile-ngo-link');
+    const mobileAuthNavBtn = document.getElementById('mobile-auth-nav-btn');
+    const goToRegisterLink = document.getElementById('go-to-register-link');
+    const goToLoginLink = document.getElementById('go-to-login-link');
+    const authTabs = document.querySelectorAll('.auth-tab');
 
-        const authTabs = document.querySelectorAll('.auth-tab');
-        const needsGrid = document.getElementById('needs-grid');
-        const filterButtonsContainer = document.getElementById('filter-buttons');
-        const donationModal = document.getElementById('donation-modal');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const ngoNeedsList = document.getElementById('ngo-needs-list');
-        const ngoModal = document.getElementById('ngo-modal');
-        const closeNgoModalBtn = document.getElementById('close-ngo-modal-btn');
-        const postNeedBtn = document.getElementById('post-need-btn');
-        const ngoForm = document.getElementById('ngo-form');
+    // Data UI Elements
+    const needsGrid = document.getElementById('needs-grid');
+    const filterButtonsContainer = document.getElementById('filter-buttons');
+    const donationModal = document.getElementById('donation-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const ngoNeedsList = document.getElementById('ngo-needs-list');
+    const ngoModal = document.getElementById('ngo-modal');
+    const closeNgoModalBtn = document.getElementById('close-ngo-modal-btn');
+    const postNeedBtn = document.getElementById('post-need-btn');
+    const ngoForm = document.getElementById('ngo-form');
 
-        // --- CORE APP LOGIC ---
-        const updateUI = () => {
-            if (currentUser) {
-                loggedInButtons.classList.remove('hidden');
-                loggedInButtons.classList.add('md:flex');
-                loggedOutButtons.classList.add('hidden');
-                welcomeMessage.textContent = `Welcome, ${currentUser.name}!`;
+    // --- STATE MANAGEMENT ---
+    let currentUserData = null; // Stores the custom user data (role, name) from Firestore
+    let allNeedsData = []; // Stores the needs fetched from Firestore
+
+    // --- AUTHENTICATION LOGIC ---
+
+    // 1. Monitor Auth State (Login/Logout/Page Refresh)
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            // User is signed in, fetch their profile data
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                currentUserData = userDoc.data();
+                currentUserData.uid = user.uid; // Add UID to the object
+                updateUI(true);
                 
-                mobileLoggedOutWrapper.classList.add('hidden');
-                mobileLoggedInWrapper.classList.remove('hidden');
-                mobileWelcomeMessage.textContent = `Welcome, ${currentUser.name}!`;
+                // If user is NGO, load their specific needs
+                if(currentUserData.type === 'ngo') {
+                    renderNgoNeeds();
+                }
             } else {
-                loggedInButtons.classList.add('hidden');
-                loggedOutButtons.classList.remove('hidden');
-                mobileLoggedInWrapper.classList.add('hidden');
-                mobileLoggedOutWrapper.classList.remove('hidden');
+                console.error("No user profile found!");
             }
-            const isNgo = currentUser && currentUser.type === 'ngo';
-            ngoLink.style.display = isNgo ? 'block' : 'none';
-            mobileNgoLink.style.display = isNgo ? 'block' : 'none';
-        };
+        } else {
+            // User is signed out
+            currentUserData = null;
+            updateUI(false);
+        }
+    });
 
-        const showView = (viewId) => {
-            mainViews.forEach(view => view.classList.add('hidden'));
-            document.getElementById(viewId).classList.remove('hidden');
-            navLinks.forEach(link => link.classList.remove('nav-active'));
-            if (viewId === 'donor-view') homeLink.classList.add('nav-active');
-            if (viewId === 'about-view') aboutLink.classList.add('nav-active');
-            if (viewId === 'ngo-view') ngoLink.classList.add('nav-active');
-            mobileMenu.classList.add('hidden');
-        };
-
-        // --- AUTHENTICATION (Simulated) ---
-        const handleLogin = (e, userType) => {
-            e.preventDefault();
-            if (userType === 'donor') {
-                currentUser = { type: 'donor', name: 'Alex Doe' };
-                alert('Donor login successful!');
-                showView('donor-view');
-            } else if (userType === 'ngo') {
-                currentUser = { type: 'ngo', name: LOGGED_IN_NGO_NAME };
-                alert('NGO login successful!');
-                renderNgoNeeds();
-                showView('ngo-view');
-            }
-            updateUI();
-        };
-
-        const handleRegister = (e) => {
-            e.preventDefault();
-            alert('Registration successful! Please log in.');
-            showView('login-view');
-        };
-
-        const handleLogout = () => {
-            currentUser = null;
-            alert('You have been logged out.');
-            updateUI();
-            showView('donor-view');
-        };
-
-        // --- HELPER & RENDER FUNCTIONS ---
-        const getUrgencyClass = (urgency) => {
-            switch (urgency.toLowerCase()) {
-                case 'critical': return 'bg-red-600';
-                case 'high': return 'bg-orange-500';
-                case 'medium': return 'bg-yellow-500';
-                default: return 'bg-green-500';
-            }
-        };
-
-        const getCategoryIcon = (category) => {
-             switch (category.toLowerCase()) {
-                case 'food': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M10 14a2 2 0 104 0h-4z"></path></svg>`;
-                case 'blood': return `<svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98S17.51 2.02 12 2.02zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.58-12.03l-4.24 4.24c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L12.99 7.97c-.39-.39-1.02-.39-1.41 0z"></path></svg>`;
-                case 'essentials': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>`;
-                case 'organs': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>`;
-                case 'funding': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 6v-1h4v1m-4 10v1h4v-1m-4-10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`;
-                default: return '';
-            }
-        };
+    // 2. Handle Login
+    const handleLogin = async (e, userType) => {
+        e.preventDefault();
+        const emailId = userType === 'donor' ? 'donor-login-email' : 'ngo-login-email';
+        const passId = userType === 'donor' ? 'donor-login-password' : 'ngo-login-password';
         
-        const renderNeeds = (filteredNeeds) => {
-            needsGrid.innerHTML = '';
-            if (filteredNeeds.length === 0) {
-                needsGrid.innerHTML = `<p class="text-center text-gray-500 md:col-span-2 lg:col-span-3">No needs found for this category.</p>`;
-                return;
-            }
-            filteredNeeds.forEach(need => {
-                needsGrid.innerHTML += `
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
-                        <div class="p-6">
-                            <div class="flex items-start justify-between">
-                                <div class="flex items-center gap-4">
-                                    <div class="p-3 rounded-full ${getUrgencyClass(need.urgency)}">${getCategoryIcon(need.category)}</div>
-                                    <div>
-                                        <p class="text-sm font-semibold text-blue-600">${need.category}</p>
-                                        <h3 class="text-lg font-bold text-gray-900">${need.title}</h3>
-                                    </div>
-                                </div>
-                                <div class="text-xs font-bold text-white px-2 py-1 rounded-full ${getUrgencyClass(need.urgency)}">${need.urgency}</div>
-                            </div>
-                            <p class="text-gray-600 mt-4">${need.description.substring(0, 100)}...</p>
-                            <div class="mt-6 flex justify-between items-center">
-                                <p class="text-sm text-gray-500">${need.ngo} - ${need.location}</p>
-                                <button class="donate-btn bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-lg hover:bg-blue-200 transition" data-id="${need.id}">Donate</button>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        };
+        const email = document.getElementById(emailId).value;
+        const password = document.getElementById(passId).value;
 
-        const renderNgoNeeds = () => {
-            ngoNeedsList.innerHTML = '';
-            const myNeeds = needsData.filter(need => need.ngo === LOGGED_IN_NGO_NAME);
-            if(myNeeds.length === 0){
-                ngoNeedsList.innerHTML = `<p class="text-center text-gray-500 p-8 bg-white rounded-lg shadow">Your NGO has not posted any needs yet.</p>`;
-                return;
-            }
-            myNeeds.forEach(need => {
-                ngoNeedsList.innerHTML += `
-                <div class="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
-                    <div class="mb-4 md:mb-0">
-                        <p class="text-sm font-semibold text-blue-600">${need.category} <span class="ml-2 text-xs font-bold text-white px-2 py-0.5 rounded-full ${getUrgencyClass(need.urgency)}">${need.urgency}</span></p>
-                        <h4 class="text-lg font-bold text-gray-800">${need.title}</h4>
-                        <p class="text-sm text-gray-500">${need.location}</p>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button class="edit-need-btn text-sm bg-yellow-400 text-white px-3 py-1 rounded-md hover:bg-yellow-500" data-id="${need.id}">Edit</button>
-                        <button class="delete-need-btn text-sm bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600" data-id="${need.id}">Delete</button>
-                    </div>
-                </div>`;
-            });
-        };
-        
-        // --- MODAL LOGIC ---
-        const openDonationModal = (needId) => {
-            const need = needsData.find(n => n.id == needId);
-            if (need) {
-                donationModal.querySelector('#modal-title').textContent = need.title;
-                donationModal.querySelector('#modal-ngo').textContent = need.ngo;
-                donationModal.querySelector('#modal-location').textContent = need.location;
-                donationModal.querySelector('#modal-description').textContent = need.description;
-                donationModal.classList.remove('hidden');
-            }
-        };
-        const closeDonationModal = () => donationModal.classList.add('hidden');
-        
-        const openNgoModal = (needId = null) => {
-            ngoForm.reset();
-            if (needId) {
-                const need = needsData.find(n => n.id == needId);
-                ngoModal.querySelector('#ngo-modal-title').textContent = 'Edit Need';
-                ngoModal.querySelector('#need-id').value = need.id;
-                ngoModal.querySelector('#need-title').value = need.title;
-                ngoModal.querySelector('#need-description').value = need.description;
-                ngoModal.querySelector('#need-category').value = need.category;
-                ngoModal.querySelector('#need-urgency').value = need.urgency;
-                ngoModal.querySelector('#need-location').value = need.location;
-            } else {
-                ngoModal.querySelector('#ngo-modal-title').textContent = 'Post a New Need';
-                ngoModal.querySelector('#need-id').value = '';
-            }
-            ngoModal.classList.remove('hidden');
-        };
-        const closeNgoModal = () => ngoModal.classList.add('hidden');
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            // onAuthStateChanged will handle the UI update
+            alert("Login Successful!");
+            showView('donor-view'); // Default redirect
+        } catch (error) {
+            alert("Login Failed: " + error.message);
+        }
+    };
 
-        const saveNeed = (e) => {
-            e.preventDefault();
-            const id = document.getElementById('need-id').value;
-            const needDetails = {
-                title: document.getElementById('need-title').value,
-                description: document.getElementById('need-description').value,
-                category: document.getElementById('need-category').value,
-                urgency: document.getElementById('need-urgency').value,
-                location: document.getElementById('need-location').value,
-                ngo: LOGGED_IN_NGO_NAME
+    // 3. Handle Registration
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        const formId = e.target.id;
+        const isNgo = formId === 'ngo-register-form';
+        
+        // Get generic input values based on form
+        const emailInput = e.target.querySelector('input[type="email"]');
+        const passwordInput = e.target.querySelector('input[type="password"]');
+        const nameInput = e.target.querySelector('input[type="text"]'); // Full Name or NGO Name
+        
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const name = nameInput.value;
+
+        try {
+            // 1. Create Auth User
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            // 2. Save Custom Data to Firestore 'users' collection
+            const userData = {
+                email: email,
+                type: isNgo ? 'ngo' : 'donor',
+                name: name,
+                createdAt: serverTimestamp()
             };
+            
+            if(isNgo) userData.ngoName = name; // Store NGO name specifically
 
-            if (id) {
-                const index = needsData.findIndex(n => n.id == id);
-                needsData[index] = { ...needsData[index], ...needDetails };
-            } else { 
-                needDetails.id = Date.now();
-                needsData.push(needDetails);
+            await setDoc(doc(db, "users", user.uid), userData);
+
+            alert("Registration Successful!");
+            showView('login-view'); // Redirect to login after register
+        } catch (error) {
+            alert("Registration Failed: " + error.message);
+        }
+    };
+
+    // 4. Handle Logout
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            alert('You have been logged out.');
+            showView('donor-view');
+        } catch (error) {
+            console.error("Logout Error", error);
+        }
+    };
+
+
+    // --- DATABASE LOGIC (NEEDS) ---
+
+    // 1. Real-time Listener for ALL Needs (Public Feed)
+    // This runs automatically when data changes in the database
+    onSnapshot(collection(db, "needs"), (snapshot) => {
+        allNeedsData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        // Default render: All categories
+        renderNeeds(allNeedsData);
+        // Also update NGO dashboard if an NGO is looking at it
+        if(currentUserData && currentUserData.type === 'ngo') {
+            renderNgoNeeds();
+        }
+    });
+
+    // 2. Save/Post a Need (Create or Update)
+    const saveNeed = async (e) => {
+        e.preventDefault();
+        
+        const needId = document.getElementById('need-id').value;
+        const needData = {
+            title: document.getElementById('need-title').value,
+            description: document.getElementById('need-description').value,
+            category: document.getElementById('need-category').value,
+            urgency: document.getElementById('need-urgency').value,
+            location: document.getElementById('need-location').value,
+            ngoName: currentUserData.name,
+            ngoId: currentUserData.uid,
+            updatedAt: serverTimestamp()
+        };
+
+        try {
+            if (needId) {
+                // Update existing
+                await updateDoc(doc(db, "needs", needId), needData);
+                alert("Need updated successfully!");
+            } else {
+                // Create new
+                needData.createdAt = serverTimestamp();
+                await addDoc(collection(db, "needs"), needData);
+                alert("Need posted successfully!");
             }
             closeNgoModal();
+        } catch (error) {
+            alert("Error saving need: " + error.message);
+        }
+    };
+
+    // 3. Delete a Need
+    const deleteNeed = async (needId) => {
+        if (confirm('Are you sure you want to delete this need?')) {
+            try {
+                await deleteDoc(doc(db, "needs", needId));
+                // Snapshot listener will auto-update UI
+            } catch (error) {
+                alert("Error deleting need: " + error.message);
+            }
+        }
+    };
+
+
+    // --- UI HELPERS & RENDERING ---
+
+    const updateUI = (isLoggedIn) => {
+        if (isLoggedIn) {
+            loggedInButtons.classList.remove('hidden');
+            loggedInButtons.classList.add('md:flex');
+            loggedOutButtons.classList.add('hidden');
+            welcomeMessage.textContent = `Welcome, ${currentUserData.name}!`;
+            
+            mobileLoggedOutWrapper.classList.add('hidden');
+            mobileLoggedInWrapper.classList.remove('hidden');
+            mobileWelcomeMessage.textContent = `Welcome, ${currentUserData.name}!`;
+        } else {
+            loggedInButtons.classList.add('hidden');
+            loggedOutButtons.classList.remove('hidden');
+            mobileLoggedInWrapper.classList.add('hidden');
+            mobileLoggedOutWrapper.classList.remove('hidden');
+        }
+        
+        const isNgo = currentUserData && currentUserData.type === 'ngo';
+        ngoLink.style.display = isNgo ? 'block' : 'none';
+        mobileNgoLink.style.display = isNgo ? 'block' : 'none';
+    };
+
+    const showView = (viewId) => {
+        mainViews.forEach(view => view.classList.add('hidden'));
+        document.getElementById(viewId).classList.remove('hidden');
+        navLinks.forEach(link => link.classList.remove('nav-active'));
+        if (viewId === 'donor-view') homeLink.classList.add('nav-active');
+        if (viewId === 'about-view') aboutLink.classList.add('nav-active');
+        if (viewId === 'ngo-view') ngoLink.classList.add('nav-active');
+        mobileMenu.classList.add('hidden');
+    };
+
+    const getUrgencyClass = (urgency) => {
+        switch (urgency.toLowerCase()) {
+            case 'critical': return 'bg-red-600';
+            case 'high': return 'bg-orange-500';
+            case 'medium': return 'bg-yellow-500';
+            default: return 'bg-green-500';
+        }
+    };
+
+    const getCategoryIcon = (category) => {
+        // (Same SVG logic as before - abbreviated for brevity, but functionality is identical)
+         switch (category.toLowerCase()) {
+            case 'food': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path d="M9 10h.01"></path><path d="M15 10h.01"></path><path d="M10 14a2 2 0 104 0h-4z"></path></svg>`;
+            case 'blood': return `<svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.02c-5.51 0-9.98 4.47-9.98 9.98s4.47 9.98 9.98 9.98 9.98-4.47 9.98-9.98S17.51 2.02 12 2.02zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-.58-12.03l-4.24 4.24c-.39.39-.39 1.02 0 1.41l4.24 4.24c.39.39 1.02.39 1.41 0l4.24-4.24c.39-.39.39-1.02 0-1.41L12.99 7.97c-.39-.39-1.02-.39-1.41 0z"></path></svg>`;
+            case 'essentials': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>`;
+            case 'organs': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>`;
+            case 'funding': return `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 6v-1h4v1m-4 10v1h4v-1m-4-10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`;
+            default: return '';
+        }
+    };
+
+    const renderNeeds = (data) => {
+        needsGrid.innerHTML = '';
+        if (data.length === 0) {
+            needsGrid.innerHTML = `<p class="text-center text-gray-500 md:col-span-2 lg:col-span-3">No needs found.</p>`;
+            return;
+        }
+        data.forEach(need => {
+            needsGrid.innerHTML += `
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="p-3 rounded-full ${getUrgencyClass(need.urgency)}">${getCategoryIcon(need.category)}</div>
+                                <div>
+                                    <p class="text-sm font-semibold text-blue-600">${need.category}</p>
+                                    <h3 class="text-lg font-bold text-gray-900">${need.title}</h3>
+                                </div>
+                            </div>
+                            <div class="text-xs font-bold text-white px-2 py-1 rounded-full ${getUrgencyClass(need.urgency)}">${need.urgency}</div>
+                        </div>
+                        <p class="text-gray-600 mt-4">${need.description.substring(0, 100)}...</p>
+                        <div class="mt-6 flex justify-between items-center">
+                            <p class="text-sm text-gray-500">${need.ngoName || 'Unknown NGO'} - ${need.location}</p>
+                            <button class="donate-btn bg-blue-100 text-blue-800 font-semibold px-4 py-2 rounded-lg hover:bg-blue-200 transition" data-id="${need.id}">Donate</button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    };
+
+    const renderNgoNeeds = () => {
+        if (!currentUserData || currentUserData.type !== 'ngo') return;
+        
+        ngoNeedsList.innerHTML = '';
+        // Filter needs that belong to this NGO
+        const myNeeds = allNeedsData.filter(need => need.ngoId === currentUserData.uid);
+        
+        if(myNeeds.length === 0){
+            ngoNeedsList.innerHTML = `<p class="text-center text-gray-500 p-8 bg-white rounded-lg shadow">Your NGO has not posted any needs yet.</p>`;
+            return;
+        }
+        myNeeds.forEach(need => {
+            ngoNeedsList.innerHTML += `
+            <div class="bg-white rounded-lg shadow-md p-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-sm font-semibold text-blue-600">${need.category} <span class="ml-2 text-xs font-bold text-white px-2 py-0.5 rounded-full ${getUrgencyClass(need.urgency)}">${need.urgency}</span></p>
+                    <h4 class="text-lg font-bold text-gray-800">${need.title}</h4>
+                    <p class="text-sm text-gray-500">${need.location}</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="edit-need-btn text-sm bg-yellow-400 text-white px-3 py-1 rounded-md hover:bg-yellow-500" data-id="${need.id}">Edit</button>
+                    <button class="delete-need-btn text-sm bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600" data-id="${need.id}">Delete</button>
+                </div>
+            </div>`;
+        });
+    };
+
+    // --- MODAL FUNCTIONS ---
+    const openDonationModal = (needId) => {
+        const need = allNeedsData.find(n => n.id == needId);
+        if (need) {
+            donationModal.querySelector('#modal-title').textContent = need.title;
+            donationModal.querySelector('#modal-ngo').textContent = need.ngoName;
+            donationModal.querySelector('#modal-location').textContent = need.location;
+            donationModal.querySelector('#modal-description').textContent = need.description;
+            donationModal.classList.remove('hidden');
+        }
+    };
+    const closeDonationModal = () => donationModal.classList.add('hidden');
+    
+    const openNgoModal = (needId = null) => {
+        ngoForm.reset();
+        if (needId) {
+            const need = allNeedsData.find(n => n.id == needId);
+            ngoModal.querySelector('#ngo-modal-title').textContent = 'Edit Need';
+            ngoModal.querySelector('#need-id').value = need.id;
+            ngoModal.querySelector('#need-title').value = need.title;
+            ngoModal.querySelector('#need-description').value = need.description;
+            ngoModal.querySelector('#need-category').value = need.category;
+            ngoModal.querySelector('#need-urgency').value = need.urgency;
+            ngoModal.querySelector('#need-location').value = need.location;
+        } else {
+            ngoModal.querySelector('#ngo-modal-title').textContent = 'Post a New Need';
+            ngoModal.querySelector('#need-id').value = '';
+        }
+        ngoModal.classList.remove('hidden');
+    };
+    const closeNgoModal = () => ngoModal.classList.add('hidden');
+
+    // --- EVENT LISTENERS ---
+    
+    // Auth listeners
+    document.getElementById('donor-login-form').addEventListener('submit', (e) => handleLogin(e, 'donor'));
+    document.getElementById('ngo-login-form').addEventListener('submit', (e) => handleLogin(e, 'ngo'));
+    document.getElementById('donor-register-form').addEventListener('submit', handleRegister);
+    document.getElementById('ngo-register-form').addEventListener('submit', handleRegister);
+    [mobileLogoutBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); handleLogout(); }));
+
+    // Navigation listeners
+    hamburgerBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    [homeLink, mobileHomeLink, brandLogo].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('donor-view'); }));
+    [aboutLink, mobileAboutLink].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('about-view'); }));
+    [authNavBtn, mobileAuthNavBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); }));
+    goToRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showView('register-view'); });
+    goToLoginLink.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); });
+
+    const handleNgoLinkClick = (e) => {
+        e.preventDefault();
+        if (currentUserData && currentUserData.type === 'ngo') {
             renderNgoNeeds();
-            renderNeeds(needsData);
-        };
+            showView('ngo-view');
+        } else {
+            alert('You must be logged in as an NGO to view the dashboard.');
+            showView('login-view');
+        }
+    };
+    [ngoLink, mobileNgoLink].forEach(el => el.addEventListener('click', handleNgoLinkClick));
 
-        const deleteNeed = (needId) => {
-            if (confirm('Are you sure you want to delete this need?')) {
-                needsData = needsData.filter(n => n.id != needId);
-                renderNgoNeeds();
-                renderNeeds(needsData);
-            }
-        };
-
-        // --- EVENT LISTENERS ---
-        hamburgerBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-        
-        [homeLink, mobileHomeLink, brandLogo].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('donor-view'); }));
-        [aboutLink, mobileAboutLink].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('about-view'); }));
-        [authNavBtn, mobileAuthNavBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); }));
-        
-        [mobileLogoutBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); handleLogout(); }));
-
-        goToRegisterLink.addEventListener('click', (e) => { e.preventDefault(); showView('register-view'); });
-        goToLoginLink.addEventListener('click', (e) => { e.preventDefault(); showView('login-view'); });
-
-        const handleNgoLinkClick = (e) => {
-            e.preventDefault();
-            if (currentUser && currentUser.type === 'ngo') {
-                renderNgoNeeds();
-                showView('ngo-view');
-            } else {
-                alert('You must be logged in as an NGO to view the dashboard.');
-                showView('login-view');
-            }
-        };
-        [ngoLink, mobileNgoLink].forEach(el => el.addEventListener('click', handleNgoLinkClick));
-
-        authTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const targetId = tab.dataset.authTab;
-                tab.parentElement.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('tab-active'));
-                tab.classList.add('tab-active');
-                tab.closest('.p-8').querySelectorAll('.auth-form').forEach(form => form.classList.add('hidden'));
-                document.getElementById(targetId + '-form').classList.remove('hidden');
-            });
+    // Tab listeners
+    authTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetId = tab.dataset.authTab;
+            tab.parentElement.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('tab-active'));
+            tab.classList.add('tab-active');
+            tab.closest('.p-8').querySelectorAll('.auth-form').forEach(form => form.classList.add('hidden'));
+            document.getElementById(targetId + '-form').classList.remove('hidden');
         });
-
-        document.getElementById('donor-login-form').addEventListener('submit', (e) => handleLogin(e, 'donor'));
-        document.getElementById('ngo-login-form').addEventListener('submit', (e) => handleLogin(e, 'ngo'));
-        document.getElementById('donor-register-form').addEventListener('submit', handleRegister);
-        document.getElementById('ngo-register-form').addEventListener('submit', handleRegister);
-        
-        filterButtonsContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('filter-btn')) {
-                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-filter'));
-                e.target.classList.add('active-filter');
-                const category = e.target.dataset.category;
-                const filtered = category === 'All' ? needsData : needsData.filter(need => need.category === category);
-                renderNeeds(filtered);
-            }
-        });
-
-        needsGrid.addEventListener('click', (e) => { if (e.target.closest('.donate-btn')) openDonationModal(e.target.closest('.donate-btn').dataset.id); });
-        ngoNeedsList.addEventListener('click', (e) => {
-            if (e.target.closest('.edit-need-btn')) openNgoModal(e.target.closest('.edit-need-btn').dataset.id);
-            if (e.target.closest('.delete-need-btn')) deleteNeed(e.target.closest('.delete-need-btn').dataset.id);
-        });
-
-        if(closeModalBtn) closeModalBtn.addEventListener('click', closeDonationModal);
-        donationModal.addEventListener('click', (e) => { if (e.target.id === 'donation-modal') closeDonationModal(); });
-        if(closeNgoModalBtn) closeNgoModalBtn.addEventListener('click', closeNgoModal);
-        ngoModal.addEventListener('click', (e) => { if (e.target.id === 'ngo-modal') closeNgoModal(); });
-        postNeedBtn.addEventListener('click', () => openNgoModal());
-        ngoForm.addEventListener('submit', saveNeed);
-
-        // --- INITIALIZATION ---
-        updateUI();
-        showView('donor-view');
-        renderNeeds(needsData);
     });
-    </script>
+
+    // Interaction listeners
+    filterButtonsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-filter'));
+            e.target.classList.add('active-filter');
+            const category = e.target.dataset.category;
+            const filtered = category === 'All' ? allNeedsData : allNeedsData.filter(need => need.category === category);
+            renderNeeds(filtered);
+        }
+    });
+
+    needsGrid.addEventListener('click', (e) => { if (e.target.closest('.donate-btn')) openDonationModal(e.target.closest('.donate-btn').dataset.id); });
+    ngoNeedsList.addEventListener('click', (e) => {
+        if (e.target.closest('.edit-need-btn')) openNgoModal(e.target.closest('.edit-need-btn').dataset.id);
+        if (e.target.closest('.delete-need-btn')) deleteNeed(e.target.closest('.delete-need-btn').dataset.id);
+    });
+
+    if(closeModalBtn) closeModalBtn.addEventListener('click', closeDonationModal);
+    donationModal.addEventListener('click', (e) => { if (e.target.id === 'donation-modal') closeDonationModal(); });
+    if(closeNgoModalBtn) closeNgoModalBtn.addEventListener('click', closeNgoModal);
+    ngoModal.addEventListener('click', (e) => { if (e.target.id === 'ngo-modal') closeNgoModal(); });
+    postNeedBtn.addEventListener('click', () => openNgoModal());
+    ngoForm.addEventListener('submit', saveNeed);
+
+    // Initial View
+    updateUI(false); 
+</script>
 </body>
 </html>
 
